@@ -2,7 +2,7 @@
 
 同步 Codex 官方 `model_catalog.json`，维护厂商官方模型基线，并生成第三方路由可直接使用的标准目录。脚本仅依赖 Python 标准库。
 
-[同步](#sync) · [官方厂商基线](#third-party) · [第三方路由](#routes) · [Provider 共存](#providers) · [来源](#sources) · [归档](#archives) · [验证](#verify)
+[同步](#sync) · [快速安装](#install) · [官方厂商基线](#third-party) · [第三方路由](#routes) · [来源](#sources) · [归档](#archives) · [验证](#verify)
 
 查看当前 **[版本归档索引](catalogs/INDEX.md)**。
 
@@ -27,6 +27,45 @@ python .\sync_model_catalog.py --base cli-bundled       # 使用 PATH CLI
 python .\sync_model_catalog.py --base github-main       # 使用上游 main
 python .\sync_model_catalog.py --strict --check         # 发布前检查
 ```
+
+<a id="install"></a>
+## 最省事的安装
+
+Codex 启动时加载 `model_catalog_json` 指向的一份目录。直接使用项目根目录的 [`model_catalog.json`](model_catalog.json) 即可。
+
+只使用 OpenAI 模型时无需额外生成。要把第三方模型一起合并到根目录，执行对应预设：
+
+```powershell
+python .\sync_model_catalog.py --preset grok       # 加入 Grok，包含 grok-4.5
+python .\sync_model_catalog.py --preset deepseek   # 加入 DeepSeek
+python .\sync_model_catalog.py --preset kimi       # 加入 Kimi
+python .\sync_model_catalog.py --preset all        # 加入全部第三方模型
+```
+
+`--preset` 会把第三方模型合并进根目录的 `model_catalog.json`。以后同步时继续带上同一个预设，否则根目录会恢复为默认 OpenAI 目录。
+
+然后复制生成的根目录文件：
+
+```powershell
+$codexConfigDir = Join-Path ([Environment]::GetFolderPath("UserProfile")) ".codex"
+$codexCatalogDir = Join-Path $codexConfigDir "model-catalogs"
+New-Item -ItemType Directory -Force -Path $codexCatalogDir | Out-Null
+Copy-Item .\model_catalog.json (Join-Path $codexCatalogDir "model_catalog.json") -Force
+```
+
+在用户级 `~/.codex/config.toml` 中引用它：
+
+```toml
+model_catalog_json = "C:/Users/<username>/.codex/model-catalogs/model_catalog.json"
+```
+
+重启 Codex 后检查目录：
+
+```powershell
+codex debug models
+```
+
+`third_party/{grok,deepseek,kimi}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。
 
 <a id="third-party"></a>
 ## 官方厂商基线
@@ -89,30 +128,6 @@ third_party/routes/<route>/route.json
 
 App / CLI 使用完整语义版本号并按新到旧排序；`main` 按内容哈希保存。相同内容不会重复归档，同版本内容变化时不会覆盖旧文件。完整版本、哈希和来源见 [`catalogs/INDEX.md`](catalogs/INDEX.md)。
 
-<a id="providers"></a>
-## Provider 共存
-
-模型目录只描述模型，不会按模型自动切换 Provider。官方号与第三方 API 可以同时定义，启动时用 Provider 和模型一起选择：
-
-```toml
-model_catalog_json = "C:\\absolute\\path\\to\\model_catalog.json"
-
-[model_providers.xai]
-name = "xAI"
-base_url = "https://api.x.ai/v1"
-env_key = "XAI_API_KEY"
-wire_api = "responses"
-```
-
-```powershell
-codex --model gpt-5.6-sol -c 'model_provider="openai"'
-codex --model grok-build-0.1 -c 'model_provider="xai"'
-```
-
-使用第三方路由时，把 `model_catalog_json` 改为对应的标准目录，并让 `model_provider` 指向同一个路由。例如 OpenRouter Grok 使用 `third_party/routes/openrouter/grok/model_catalog.json`，模型 slug 为 `x-ai/grok-4.5`。不要把一个路由的目录配给另一个 Provider。
-
-DeepSeek V4 Pro / Kimi 需要把 `model_provider` 指向能接收 Responses 的网关；网关地址、认证和模型映射由网关维护。Codex App 对非 GPT slug 的菜单显示可能是 `Custom`，先用 `codex debug models` 验证；不要把第三方模型伪装成 GPT slug，否则 Provider 和能力元数据会错位。
-
 <a id="config"></a>
 ## Codex 配置
 
@@ -122,7 +137,7 @@ DeepSeek V4 Pro / Kimi 需要把 `model_provider` 指向能接收 Responses 的�
 model_catalog_json = "C:\\absolute\\path\\to\\model_catalog.json"
 ```
 
-Provider 地址、认证和 `model_provider` 也放在用户级配置，不要提交密钥。Codex 当前 `wire_api` 只支持 `responses`，详见 [官方配置参考](https://developers.openai.com/codex/config-reference/)。配置后重启 Codex，并执行 `codex debug models` 检查有效目录。
+详见 [官方配置参考](https://developers.openai.com/codex/config-reference/)。配置后重启 Codex，并执行 `codex debug models` 检查有效目录。
 
 <a id="verify"></a>
 ## 验证
