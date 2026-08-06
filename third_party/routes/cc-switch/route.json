@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "classification": "third-party",
+  "route": "cc-switch",
+  "verified_on": "2026-08-06",
+  "wire_api": "responses",
+  "base_url": "http://127.0.0.1:15721/v1",
+  "sources": [
+    "https://github.com/farion1231/cc-switch/blob/main/docs/guides/codex-deepseek-routing-guide-en.md",
+    "https://github.com/farion1231/cc-switch/releases"
+  ],
+  "providers": {
+    "grok": {
+      "official_catalog": "../../grok.json",
+      "output": "grok/model_catalog.json",
+      "transport": "responses-passthrough",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "grok-4.5": "grok-4.5",
+        "grok-build-0.1": "grok-build-0.1"
+      }
+    },
+    "deepseek": {
+      "official_catalog": "../../deepseek.json",
+      "output": "deepseek/model_catalog.json",
+      "transport": "native-responses-or-chat-gateway",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "deepseek-v4-pro": "deepseek-v4-pro",
+        "deepseek-v4-flash": "deepseek-v4-flash"
+      },
+      "notes": [
+        "DeepSeek V4 Flash can use the current native Responses integration.",
+        "DeepSeek V4 Pro still requires CC Switch Chat routing as of verification."
+      ]
+    },
+    "kimi": {
+      "official_catalog": "../../kimi.json",
+      "output": "kimi/model_catalog.json",
+      "transport": "responses-to-chat-completions",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "kimi-k3": "kimi-k3",
+        "kimi-k2.7-code": "kimi-k2.7-code",
+        "kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
+        "kimi-k2.6": "kimi-k2.6"
+      }
+    }
+  }
+}

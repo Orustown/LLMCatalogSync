@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "classification": "third-party",
+  "route": "openrouter",
+  "verified_on": "2026-08-06",
+  "wire_api": "responses",
+  "base_url": "https://openrouter.ai/api/v1",
+  "sources": [
+    "https://openrouter.ai/api/v1/models",
+    "https://openrouter.ai/docs/api/reference/responses/overview"
+  ],
+  "providers": {
+    "grok": {
+      "official_catalog": "../../grok.json",
+      "output": "grok/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "grok-4.5": "x-ai/grok-4.5",
+        "grok-build-0.1": "x-ai/grok-build-0.1"
+      }
+    },
+    "deepseek": {
+      "official_catalog": "../../deepseek.json",
+      "output": "deepseek/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "deepseek-v4-pro": "deepseek/deepseek-v4-pro",
+        "deepseek-v4-flash": "deepseek/deepseek-v4-flash"
+      },
+      "model_patches": {
+        "deepseek-v4-pro": {
+          "supported_reasoning_levels": [
+            {
+              "effort": "high",
+              "description": "Deep reasoning through OpenRouter"
+            },
+            {
+              "effort": "xhigh",
+              "description": "OpenRouter maps xhigh to maximum reasoning"
+            }
+          ]
+        },
+        "deepseek-v4-flash": {
+          "supported_reasoning_levels": [
+            {
+              "effort": "high",
+              "description": "Deep reasoning through OpenRouter"
+            },
+            {
+              "effort": "xhigh",
+              "description": "OpenRouter maps xhigh to maximum reasoning"
+            }
+          ]
+        }
+      }
+    },
+    "kimi": {
+      "official_catalog": "../../kimi.json",
+      "output": "kimi/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "kimi-k3": "moonshotai/kimi-k3",
+        "kimi-k2.7-code": "moonshotai/kimi-k2.7-code",
+        "kimi-k2.6": "moonshotai/kimi-k2.6"
+      },
+      "notes": [
+        "Kimi K2.7 Code HighSpeed is omitted because it is not listed by OpenRouter."
+      ]
+    }
+  }
+}

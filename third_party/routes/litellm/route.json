@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "classification": "third-party",
+  "route": "litellm",
+  "verified_on": "2026-08-06",
+  "wire_api": "responses",
+  "base_url": "http://127.0.0.1:4000/v1",
+  "sources": [
+    "https://docs.litellm.ai/",
+    "https://github.com/BerriAI/litellm"
+  ],
+  "providers": {
+    "grok": {
+      "official_catalog": "../../grok.json",
+      "output": "grok/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "grok-4.5": "grok-4.5",
+        "grok-build-0.1": "grok-build-0.1"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "deepseek": {
+      "official_catalog": "../../deepseek.json",
+      "output": "deepseek/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "deepseek-v4-pro": "deepseek-v4-pro",
+        "deepseek-v4-flash": "deepseek-v4-flash"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "kimi": {
+      "official_catalog": "../../kimi.json",
+      "output": "kimi/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "kimi-k3": "kimi-k3",
+        "kimi-k2.7-code": "kimi-k2.7-code",
+        "kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
+        "kimi-k2.6": "kimi-k2.6"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    }
+  }
+}

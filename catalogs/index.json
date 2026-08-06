@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "classification": "official",
+  "catalog_kind": "openai-source-archive",
+  "selected_base": {
+    "source": "app-bundled",
+    "version": "0.147.0-alpha.1.2",
+    "file": "app/0.147.0-alpha.1.2/bundled.json",
+    "models": 8,
+    "sha256": "0acd1c2cb4858313c753e108f8505343e104a783921f18459e160d4ec0e000a3"
+  },
+  "archives": {
+    "app": [
+      {
+        "source": "app-bundled",
+        "file": "app/0.147.0-alpha.1.2/bundled.json",
+        "models": 8,
+        "sha256": "0acd1c2cb4858313c753e108f8505343e104a783921f18459e160d4ec0e000a3",
+        "archived_at": "2026-08-06T04:56:49.778842Z",
+        "origin": "Codex App CLI: codex debug models --bundled",
+        "version": "0.147.0-alpha.1.2"
+      },
+      {
+        "source": "app-github-tag",
+        "file": "app/0.147.0-alpha.1.2/github-tag.json",
+        "models": 8,
+        "sha256": "aad385d80d6448aff22b2169efac1c0761d371c1cbf7851c3a60ed8cf6376d5a",
+        "archived_at": "2026-08-06T04:56:49.778842Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.147.0-alpha.1.2/codex-rs/models-manager/models.json",
+        "version": "0.147.0-alpha.1.2"
+      }
+    ],
+    "cli": [
+      {
+        "source": "cli-bundled",
+        "file": "cli/0.144.1/bundled.json",
+        "models": 8,
+        "sha256": "afc579acafff5281b9d7169ea0aa34a62f52a57094fc471f8076a7c28e02bfa4",
+        "archived_at": "2026-08-06T04:56:49.778842Z",
+        "origin": "PATH CLI: codex debug models --bundled",
+        "version": "0.144.1"
+      },
+      {
+        "source": "cli-github-tag",
+        "file": "cli/0.144.1/github-tag.json",
+        "models": 8,
+        "sha256": "d75c9536973bba220510275914c7a6d11f63a71a477791eea0d27f9c90e81da1",
+        "archived_at": "2026-08-06T04:56:49.778842Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.144.1/codex-rs/models-manager/models.json",
+        "version": "0.144.1"
+      }
+    ],
+    "upstream": [
+      {
+        "source": "github-main",
+        "file": "upstream/main/b49fbdd60596.json",
+        "models": 8,
+        "sha256": "b49fbdd605968fcc9fbcc56ceffbe06de417d93d34a5943f44f943e6a8cf9078",
+        "archived_at": "2026-08-06T04:56:49.778842Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json"
+      }
+    ]
+  },
+  "last_sync": {
+    "cli-bundled": {
+      "status": "ok",
+      "origin": "PATH CLI: codex debug models --bundled",
+      "version": "0.144.1",
+      "models": 8,
+      "sha256": "afc579acafff5281b9d7169ea0aa34a62f52a57094fc471f8076a7c28e02bfa4",
+      "archive": "cli/0.144.1/bundled.json"
+    },
+    "cli-github-tag": {
+      "status": "skipped",
+      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.144.1/codex-rs/models-manager/models.json",
+      "version": "0.144.1",
+      "error": "offline mode"
+    },
+    "app-bundled": {
+      "status": "ok",
+      "origin": "Codex App CLI: codex debug models --bundled",
+      "version": "0.147.0-alpha.1.2",
+      "models": 8,
+      "sha256": "0acd1c2cb4858313c753e108f8505343e104a783921f18459e160d4ec0e000a3",
+      "archive": "app/0.147.0-alpha.1.2/bundled.json"
+    },
+    "app-github-tag": {
+      "status": "skipped",
+      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.147.0-alpha.1.2/codex-rs/models-manager/models.json",
+      "version": "0.147.0-alpha.1.2",
+      "error": "offline mode"
+    },
+    "github-main": {
+      "status": "skipped",
+      "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json",
+      "error": "offline mode"
+    }
+  },
+  "updated_at": "2026-08-06T07:50:56.519907Z"
+}
