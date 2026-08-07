@@ -3,7 +3,7 @@
     {
       "slug": "gpt-5.6-sol",
       "display_name": "GPT-5.6-Sol",
-      "description": "OpenAI · 272K context · $5/M input · $30/M output · Vision",
+      "description": "OpenAI      · 272K context · $5/M input     · $30/M output   · Vision",
       "default_reasoning_level": "low",
       "supported_reasoning_levels": [
         {
@@ -91,7 +91,7 @@
     {
       "slug": "gpt-5.6-terra",
       "display_name": "GPT-5.6-Terra",
-      "description": "OpenAI · 272K context · $2/M input · $12/M output · Vision",
+      "description": "OpenAI      · 272K context · $2/M input     · $12/M output   · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
@@ -177,7 +177,7 @@
     {
       "slug": "gpt-5.6-luna",
       "display_name": "GPT-5.6-Luna",
-      "description": "OpenAI · 272K context · $0.2/M input · $1.2/M output · Vision",
+      "description": "OpenAI      · 272K context · $0.2/M input   · $1.2/M output  · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
@@ -259,7 +259,7 @@
     {
       "slug": "gpt-5.5",
       "display_name": "GPT-5.5",
-      "description": "OpenAI · 272K context · $5/M input · $30/M output · Vision",
+      "description": "OpenAI      · 272K context · $5/M input     · $30/M output   · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
@@ -337,7 +337,7 @@
     {
       "slug": "gpt-5.4",
       "display_name": "GPT-5.4",
-      "description": "OpenAI · 272K context · $2.5/M input · $15/M output · Vision",
+      "description": "OpenAI      · 272K context · $2.5/M input   · $15/M output   · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
@@ -487,7 +487,7 @@
     {
       "slug": "gpt-5.2",
       "display_name": "GPT-5.2",
-      "description": "OpenAI · 272K context · $1.75/M input · $14/M output · Vision",
+      "description": "OpenAI      · 272K context · $1.75/M input  · $14/M output   · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
@@ -633,7 +633,7 @@
     {
       "slug": "grok-4.5",
       "display_name": "Grok 4.5",
-      "description": "xAI · 500K context · $2/M input · $6/M output · Vision",
+      "description": "xAI         · 500K context · $2/M input     · $6/M output    · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -683,7 +683,7 @@
     {
       "slug": "grok-build-0.1",
       "display_name": "Grok Build 0.1",
-      "description": "xAI · 256K context · $1/M input · $2/M output · Vision",
+      "description": "xAI         · 256K context · $1/M input     · $2/M output    · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -725,7 +725,7 @@
     {
       "slug": "deepseek-v4-pro",
       "display_name": "DeepSeek V4 Pro",
-      "description": "DeepSeek · 1M context · $0.435/M input · $0.87/M output · Text",
+      "description": "DeepSeek    · 1M context   · $0.435/M input · $0.87/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -774,7 +774,7 @@
     {
       "slug": "deepseek-v4-flash",
       "display_name": "DeepSeek V4 Flash",
-      "description": "DeepSeek · 1M context · $0.14/M input · $0.28/M output · Text",
+      "description": "DeepSeek    · 1M context   · $0.14/M input  · $0.28/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -823,7 +823,7 @@
     {
       "slug": "kimi-k3",
       "display_name": "Kimi K3",
-      "description": "Moonshot AI · 1M context · $3/M input · $15/M output · Vision",
+      "description": "Moonshot AI · 1M context   · $3/M input     · $15/M output   · Vision",
       "default_reasoning_level": "max",
       "supported_reasoning_levels": [
         {
@@ -873,7 +873,7 @@
     {
       "slug": "kimi-k2.7-code",
       "display_name": "Kimi K2.7 Code",
-      "description": "Moonshot AI · 262K context · $0.95/M input · $4/M output · Vision",
+      "description": "Moonshot AI · 262K context · $0.95/M input  · $4/M output    · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -915,7 +915,7 @@
     {
       "slug": "kimi-k2.7-code-highspeed",
       "display_name": "Kimi K2.7 Code HighSpeed",
-      "description": "Moonshot AI · 262K context · $1.9/M input · $8/M output · Vision",
+      "description": "Moonshot AI · 262K context · $1.9/M input   · $8/M output    · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -957,7 +957,7 @@
     {
       "slug": "kimi-k2.6",
       "display_name": "Kimi K2.6",
-      "description": "Moonshot AI · 262K context · $0.95/M input · $4/M output · Vision",
+      "description": "Moonshot AI · 262K context · $0.95/M input  · $4/M output    · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {

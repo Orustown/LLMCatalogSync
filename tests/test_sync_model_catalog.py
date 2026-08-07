@@ -214,6 +214,52 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(sync.format_modality_label(["text", "image"]), "Vision")
         self.assertEqual(sync.format_modality_label(["text"]), "Text")
 
+    def test_aligned_picker_descriptions_pad_provider_and_price_columns(self) -> None:
+        catalog = {
+            "models": [
+                {
+                    "slug": "gpt-5.2",
+                    "description": "old",
+                    "context_window": 272000,
+                    "input_modalities": ["text", "image"],
+                },
+                {
+                    "slug": "kimi-k3",
+                    "description": "old",
+                    "context_window": 1048576,
+                    "input_modalities": ["text", "image"],
+                },
+                {
+                    "slug": "deepseek-v4-pro",
+                    "description": "old",
+                    "context_window": 1048576,
+                    "input_modalities": ["text"],
+                },
+            ]
+        }
+        enriched, changes = sync.enrich_catalog_descriptions(catalog)
+        descriptions = [model["description"] for model in enriched["models"]]
+
+        # Provider / context / input / output columns should share separators.
+        markers = [" · " for _ in range(4)]
+        positions_by_marker: list[list[int]] = [[] for _ in markers]
+        for description in descriptions:
+            cursor = 0
+            for marker_index, marker in enumerate(markers):
+                found_at = description.index(marker, cursor)
+                positions_by_marker[marker_index].append(found_at)
+                cursor = found_at + len(marker)
+
+        for positions in positions_by_marker:
+            self.assertEqual(len(set(positions)), 1, positions)
+
+        self.assertIn("Moonshot AI", descriptions[1])
+        self.assertIn("DeepSeek", descriptions[2])
+        self.assertEqual(
+            changes["updated"],
+            ["gpt-5.2", "kimi-k3", "deepseek-v4-pro"],
+        )
+
     def test_enrich_catalog_descriptions_uses_pricing_metadata(self) -> None:
         catalog = {
             "models": [
@@ -238,13 +284,20 @@ class CatalogTests(unittest.TestCase):
             ]
         }
         enriched, changes = sync.enrich_catalog_descriptions(catalog)
+        sol_description = enriched["models"][0]["description"]
+        kimi_description = enriched["models"][1]["description"]
         self.assertEqual(
-            enriched["models"][0]["description"],
+            " ".join(sol_description.split()),
             "OpenAI · 272K context · $5/M input · $30/M output · Vision",
         )
         self.assertEqual(
-            enriched["models"][1]["description"],
+            " ".join(kimi_description.split()),
             "Moonshot AI · 1M context · $3/M input · $15/M output · Vision",
+        )
+        # Alignment pads shorter provider names to match the longest row.
+        self.assertEqual(
+            sol_description.index(" · "),
+            kimi_description.index(" · "),
         )
         self.assertEqual(enriched["models"][2]["description"], "keep me")
         self.assertEqual(changes["updated"], ["gpt-5.6-sol", "moonshotai/kimi-k3"])

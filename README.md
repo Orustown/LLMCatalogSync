@@ -18,10 +18,14 @@ python .\sync_model_catalog.py
 默认同步 5 个官方来源，优先用 App 内置目录生成 [`model_catalog.json`](model_catalog.json)，未找到 App 时回退到 PATH 中的 CLI。长期自定义字段放在 [`model_overrides.json`](model_overrides.json)，不要直接修改生成文件。同步时会读取 [`pricing_metadata.json`](pricing_metadata.json)，把厂商、上下文、价格和 Vision/Text 写入每个模型的 `description`，以便 Codex `/model` 选择器显示类似：
 
 ```text
-OpenAI · 272K context · $5/M input · $30/M output · Vision
+OpenAI      · 272K context · $5/M     input · $30/M output · Vision
+xAI         · 500K context · $2/M     input · $6/M  output · Vision
+Moonshot AI · 1M context   · $3/M     input · $15/M output · Vision
 ```
 
 同步还会为缺失字段做 CLI 兼容补齐。当前常见问题是 Codex App 目录可能省略 `supports_reasoning_summaries`，而 Codex CLI 0.144.x 加载 `model_catalog_json` 时会把它当作必填字段；脚本会自动补上，避免 `failed to parse model_catalog_json`。
+
+价格展示会按当前 catalog 内所有带定价的模型统一列宽对齐（provider / context / input / output），让 monospaced `/model` 列表更整齐。
 
 `catalogs/` 中的 GPT 目录来自 OpenAI Codex CLI、App 或 [`openai/codex`](https://github.com/openai/codex)，索引统一标记为 `classification: official`，归档 JSON 保持官方原始内容。归档记录的是某个来源的历史快照，不表示该版本中的模型仍是当前默认推荐模型。
 

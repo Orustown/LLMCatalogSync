@@ -853,23 +853,78 @@ def format_modality_label(input_modalities: Any) -> str | None:
     return None
 
 
-def build_picker_description(
+def build_picker_description_parts(
     model: dict[str, Any], pricing_entry: dict[str, Any]
-) -> str:
-    parts: list[str] = [str(pricing_entry["provider"]).strip()]
+) -> list[str]:
+    """Return description columns used by the Codex model picker.
+
+    Columns:
+    1. provider
+    2. context window
+    3. input price
+    4. output price
+    5. modality (Vision / Text)
+    """
+    parts: list[str] = []
+    parts.append(str(pricing_entry["provider"]).strip())
+
     context_window = model.get("context_window")
     if isinstance(context_window, int) and not isinstance(context_window, bool):
         parts.append(format_context_window(context_window))
-    parts.append(
-        f"{format_price_per_million(float(pricing_entry['input_per_m']))} input"
-    )
+    else:
+        parts.append("")
+
+    parts.append(f"{format_price_per_million(float(pricing_entry['input_per_m']))} input")
     parts.append(
         f"{format_price_per_million(float(pricing_entry['output_per_m']))} output"
     )
+
     modality = format_modality_label(model.get("input_modalities"))
-    if modality:
-        parts.append(modality)
-    return " · ".join(parts)
+    parts.append(modality or "")
+    return parts
+
+
+def measure_picker_column_widths(rows: list[list[str]]) -> list[int]:
+    if not rows:
+        return []
+    column_count = max(len(row) for row in rows)
+    widths = [0] * column_count
+    for row in rows:
+        for index, cell in enumerate(row):
+            widths[index] = max(widths[index], len(cell))
+    return widths
+
+
+def format_aligned_picker_description(
+    parts: list[str], column_widths: list[int]
+) -> str:
+    """Join padded columns so monospaced TUI rows form vertical columns."""
+    if not parts:
+        return ""
+    if not column_widths:
+        return " · ".join(part for part in parts if part)
+
+    padded_parts: list[str] = []
+    last_index = len(parts) - 1
+    for index, part in enumerate(parts):
+        width = column_widths[index] if index < len(column_widths) else len(part)
+        # Keep trailing spaces only between columns; last column can stay tight.
+        if index == last_index:
+            padded_parts.append(part)
+        else:
+            padded_parts.append(part.ljust(width))
+    return " · ".join(padded_parts)
+
+
+def build_picker_description(
+    model: dict[str, Any],
+    pricing_entry: dict[str, Any],
+    column_widths: list[int] | None = None,
+) -> str:
+    parts = build_picker_description_parts(model, pricing_entry)
+    if column_widths is None:
+        return " · ".join(part for part in parts if part)
+    return format_aligned_picker_description(parts, column_widths)
 
 
 def enrich_catalog_descriptions(
@@ -881,16 +936,25 @@ def enrich_catalog_descriptions(
     )
     enriched = copy.deepcopy(catalog)
     changes: dict[str, list[str]] = {"updated": [], "skipped": []}
+
+    # Two-pass formatting keeps provider / context / price columns aligned in
+    # monospaced Codex /model pickers even when vendor names and prices differ.
+    priced_rows: list[tuple[dict[str, Any], list[str]]] = []
     for model in enriched["models"]:
         slug = model["slug"]
         pricing_entry = resolve_pricing_entry(slug, metadata)
         if pricing_entry is None:
             changes["skipped"].append(slug)
             continue
-        description = build_picker_description(model, pricing_entry)
+        parts = build_picker_description_parts(model, pricing_entry)
+        priced_rows.append((model, parts))
+
+    column_widths = measure_picker_column_widths([parts for _, parts in priced_rows])
+    for model, parts in priced_rows:
+        description = format_aligned_picker_description(parts, column_widths)
         if model.get("description") != description:
             model["description"] = description
-            changes["updated"].append(slug)
+            changes["updated"].append(model["slug"])
     validate_catalog(enriched)
     return enriched, changes
 

@@ -48,7 +48,7 @@
     {
       "slug": "deepseek/deepseek-v4-flash",
       "display_name": "DeepSeek V4 Flash (OpenRouter)",
-      "description": "DeepSeek · 1M context · $0.14/M input · $0.28/M output · Text",
+      "description": "DeepSeek · 1M context · $0.14/M input  · $0.28/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
