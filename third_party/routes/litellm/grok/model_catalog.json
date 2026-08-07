@@ -3,7 +3,7 @@
     {
       "slug": "grok-4.5",
       "display_name": "Grok 4.5 (LiteLLM)",
-      "description": "xAI flagship reasoning model with a 500K context window.",
+      "description": "xAI · 500K context · $2/M input · $6/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -53,7 +53,7 @@
     {
       "slug": "grok-build-0.1",
       "display_name": "Grok Build 0.1 (LiteLLM)",
-      "description": "xAI coding model optimized for agentic software workflows.",
+      "description": "xAI · 256K context · $1/M input · $2/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {

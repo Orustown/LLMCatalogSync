@@ -161,6 +161,75 @@ class CatalogTests(unittest.TestCase):
             ["grok", "deepseek", "kimi"],
         )
 
+    def test_pricing_metadata_is_valid(self) -> None:
+        metadata = sync.load_pricing_metadata()
+        self.assertEqual(metadata["schema_version"], 1)
+        self.assertIn("gpt-5.6-sol", metadata["models"])
+        self.assertIn("kimi-k3", metadata["models"])
+
+    def test_format_helpers_match_picker_style(self) -> None:
+        self.assertEqual(sync.format_context_window(272_000), "272K context")
+        self.assertEqual(sync.format_context_window(262_144), "262K context")
+        self.assertEqual(sync.format_context_window(1_048_576), "1M context")
+        self.assertEqual(sync.format_context_window(1_000_000), "1M context")
+        self.assertEqual(sync.format_price_per_million(5.0), "$5/M")
+        self.assertEqual(sync.format_price_per_million(0.435), "$0.435/M")
+        self.assertEqual(sync.format_modality_label(["text", "image"]), "Vision")
+        self.assertEqual(sync.format_modality_label(["text"]), "Text")
+
+    def test_enrich_catalog_descriptions_uses_pricing_metadata(self) -> None:
+        catalog = {
+            "models": [
+                {
+                    "slug": "gpt-5.6-sol",
+                    "description": "Latest frontier agentic coding model.",
+                    "context_window": 272000,
+                    "input_modalities": ["text", "image"],
+                },
+                {
+                    "slug": "moonshotai/kimi-k3",
+                    "description": "Moonshot AI flagship model with a 1M context window.",
+                    "context_window": 1048576,
+                    "input_modalities": ["text", "image"],
+                },
+                {
+                    "slug": "unknown-model",
+                    "description": "keep me",
+                    "context_window": 1000,
+                    "input_modalities": ["text"],
+                },
+            ]
+        }
+        enriched, changes = sync.enrich_catalog_descriptions(catalog)
+        self.assertEqual(
+            enriched["models"][0]["description"],
+            "OpenAI · 272K context · $5/M input · $30/M output · Vision",
+        )
+        self.assertEqual(
+            enriched["models"][1]["description"],
+            "Moonshot AI · 1M context · $3/M input · $15/M output · Vision",
+        )
+        self.assertEqual(enriched["models"][2]["description"], "keep me")
+        self.assertEqual(changes["updated"], ["gpt-5.6-sol", "moonshotai/kimi-k3"])
+        self.assertEqual(changes["skipped"], ["unknown-model"])
+
+    def test_enrich_is_idempotent(self) -> None:
+        catalog = {
+            "models": [
+                {
+                    "slug": "deepseek-v4-flash",
+                    "description": "placeholder",
+                    "context_window": 1048576,
+                    "input_modalities": ["text"],
+                }
+            ]
+        }
+        first, first_changes = sync.enrich_catalog_descriptions(catalog)
+        second, second_changes = sync.enrich_catalog_descriptions(first)
+        self.assertEqual(first, second)
+        self.assertEqual(first_changes["updated"], ["deepseek-v4-flash"])
+        self.assertEqual(second_changes["updated"], [])
+
     def test_combine_overrides_deep_merges_duplicate_models(self) -> None:
         combined = sync.combine_overrides(
             [

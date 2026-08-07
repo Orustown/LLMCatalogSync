@@ -2,7 +2,7 @@
 
 同步 Codex 官方 `model_catalog.json`，维护厂商官方模型基线，并生成第三方路由可直接使用的标准目录。脚本仅依赖 Python 标准库。
 
-[同步](#sync) · [快速安装](#install) · [官方厂商基线](#third-party) · [第三方路由](#routes) · [来源](#sources) · [归档](#archives) · [验证](#verify)
+[同步](#sync) · [快速安装](#install) · [官方厂商基线](#third-party) · [第三方路由](#routes) · [来源](#sources) · [归档](#archives) · [价格展示](#pricing) · [验证](#verify)
 
 查看当前 **[版本归档索引](catalogs/INDEX.md)**。
 
@@ -15,7 +15,11 @@
 python .\sync_model_catalog.py
 ```
 
-默认同步 5 个官方来源，优先用 App 内置目录生成 [`model_catalog.json`](model_catalog.json)，未找到 App 时回退到 PATH 中的 CLI。长期自定义字段放在 [`model_overrides.json`](model_overrides.json)，不要直接修改生成文件。
+默认同步 5 个官方来源，优先用 App 内置目录生成 [`model_catalog.json`](model_catalog.json)，未找到 App 时回退到 PATH 中的 CLI。长期自定义字段放在 [`model_overrides.json`](model_overrides.json)，不要直接修改生成文件。同步时会读取 [`pricing_metadata.json`](pricing_metadata.json)，把厂商、上下文、价格和 Vision/Text 写入每个模型的 `description`，以便 Codex `/model` 选择器显示类似：
+
+```text
+OpenAI · 272K context · $5/M input · $30/M output · Vision
+```
 
 `catalogs/` 中的 GPT 目录来自 OpenAI Codex CLI、App 或 [`openai/codex`](https://github.com/openai/codex)，索引统一标记为 `classification: official`，归档 JSON 保持官方原始内容。归档记录的是某个来源的历史快照，不表示该版本中的模型仍是当前默认推荐模型。
 
@@ -26,6 +30,7 @@ python .\sync_model_catalog.py --offline                 # 只读本机 bundled
 python .\sync_model_catalog.py --base cli-bundled       # 使用 PATH CLI
 python .\sync_model_catalog.py --base github-main       # 使用上游 main
 python .\sync_model_catalog.py --strict --check         # 发布前检查
+python .\sync_model_catalog.py --no-pricing-enrichment  # 保留上游原始 description
 ```
 
 <a id="install"></a>
@@ -138,6 +143,35 @@ model_catalog_json = "C:\\absolute\\path\\to\\model_catalog.json"
 ```
 
 详见 [官方配置参考](https://developers.openai.com/codex/config-reference/)。配置后重启 Codex，并执行 `codex debug models` 检查有效目录。
+
+<a id="pricing"></a>
+## 厂商 / 价格展示从哪里来
+
+Codex 官方 `model_catalog` **没有**结构化的 provider / price 字段。`/model` 选择器只会渲染：
+
+- 左侧：`slug`
+- 右侧：`description`
+
+因此本仓库用 [`pricing_metadata.json`](pricing_metadata.json) 维护展示用定价，并在同步时把 `description` 重写为：
+
+`{provider} · {context} · ${input}/M input · ${output}/M output · Vision|Text`
+
+| 优先级 | 来源 | 用途 |
+| --- | --- | --- |
+| 1 | 厂商官方定价页 | 默认写入价格：OpenAI、xAI、DeepSeek、Kimi |
+| 2 | [LiteLLM `model_prices_and_context_window.json`](https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json) | 社区聚合兜底；新模型可能滞后 |
+| 3 | 网关报价（OpenRouter 等） | 本仓库默认**不**采用，避免把中转加价写成“官方价” |
+
+当前策略：
+
+- 货币：USD
+- 单位：每 100 万 tokens（`$/M`）
+- 档位：标准短上下文、未命中缓存（cache-miss）API 价
+- 上下文：来自 catalog 的 `context_window`
+- Vision/Text：来自 catalog 的 `input_modalities`
+- OpenRouter / LiteLLM / CC Switch 路由目录会显示同样的官方基线价，并在 `display_name` 上保留路由后缀
+
+价格会变。更新时请改 `pricing_metadata.json` 的 `models`、`verified_on` 和 `source_url`，然后重新 `python .\sync_model_catalog.py --preset all`。
 
 <a id="verify"></a>
 ## 验证

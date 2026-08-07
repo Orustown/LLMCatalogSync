@@ -23,6 +23,7 @@ import urllib.request
 PROJECT_DIR = Path(__file__).resolve().parent
 GITHUB_RAW_ROOT = "https://raw.githubusercontent.com/openai/codex"
 MODELS_PATH = "codex-rs/models-manager/models.json"
+PRICING_METADATA_PATH = PROJECT_DIR / "pricing_metadata.json"
 THIRD_PARTY_DIR = PROJECT_DIR / "third_party"
 ROUTES_DIR = THIRD_PARTY_DIR / "routes"
 SOURCE_NAMES = (
@@ -151,6 +152,14 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
         "--no-overrides",
         action="store_true",
         help="skip model_overrides.json (selected third-party presets still apply)",
+    )
+    parser.add_argument(
+        "--no-pricing-enrichment",
+        action="store_true",
+        help=(
+            "skip rewriting model descriptions with provider, context, pricing, "
+            "and modality metadata from pricing_metadata.json"
+        ),
     )
     parser.add_argument(
         "--no-routes",
@@ -621,7 +630,9 @@ def build_route_catalogs(
                     model = deep_merge(model, patches[source_slug])
                 models.append(model)
 
-            catalog = validate_catalog({"models": models})
+            catalog, _ = enrich_catalog_descriptions(
+                validate_catalog({"models": models})
+            )
             output_path = (manifest_path.parent / config["output"]).resolve()
             if not output_path.is_relative_to(routes_root):
                 raise SyncError(f"route catalog output escapes routes directory: {output_path}")
@@ -685,6 +696,179 @@ def merge_overrides(
 
     validate_catalog(merged)
     return merged, changes
+
+
+def load_pricing_metadata(path: Path | None = None) -> dict[str, Any]:
+    metadata_path = PRICING_METADATA_PATH if path is None else path
+    if not metadata_path.exists():
+        raise SyncError(f"pricing metadata is missing: {metadata_path}")
+    try:
+        value = json.loads(metadata_path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise SyncError(f"could not read pricing metadata from {metadata_path}: {exc}") from exc
+    if not isinstance(value, dict):
+        raise SyncError("pricing metadata root must be a JSON object")
+    if value.get("schema_version") != 1:
+        raise SyncError(f"unsupported pricing metadata schema in {metadata_path}")
+    try:
+        dt.date.fromisoformat(str(value.get("verified_on", "")))
+    except ValueError as exc:
+        raise SyncError("pricing metadata verified_on must use YYYY-MM-DD") from exc
+
+    sources = value.get("sources")
+    if not isinstance(sources, dict) or not sources:
+        raise SyncError("pricing metadata sources must be a non-empty JSON object")
+    for source_name, source_info in sources.items():
+        if not isinstance(source_info, dict):
+            raise SyncError(f"pricing source {source_name!r} must be a JSON object")
+        for key in ("label", "url", "reliability"):
+            if not isinstance(source_info.get(key), str) or not source_info[key].strip():
+                raise SyncError(
+                    f"pricing source {source_name}.{key} must be a non-empty string"
+                )
+        if not source_info["url"].startswith("https://"):
+            raise SyncError(f"pricing source {source_name}.url must be an HTTPS URL")
+
+    aliases = value.get("aliases", {})
+    if not isinstance(aliases, dict) or any(
+        not isinstance(source, str)
+        or not source
+        or not isinstance(target, str)
+        or not target
+        for source, target in aliases.items()
+    ):
+        raise SyncError("pricing metadata aliases must map slug strings to slug strings")
+
+    models = value.get("models")
+    if not isinstance(models, dict) or not models:
+        raise SyncError("pricing metadata models must be a non-empty JSON object")
+    for slug, entry in models.items():
+        if not isinstance(slug, str) or not slug:
+            raise SyncError("pricing model keys must be non-empty strings")
+        if not isinstance(entry, dict):
+            raise SyncError(f"pricing entry for {slug!r} must be a JSON object")
+        provider = entry.get("provider")
+        if not isinstance(provider, str) or not provider.strip():
+            raise SyncError(f"pricing entry {slug}.provider must be a non-empty string")
+        for price_key in ("input_per_m", "output_per_m"):
+            price_value = entry.get(price_key)
+            if not isinstance(price_value, (int, float)) or isinstance(price_value, bool):
+                raise SyncError(f"pricing entry {slug}.{price_key} must be a number")
+            if float(price_value) < 0:
+                raise SyncError(f"pricing entry {slug}.{price_key} must be non-negative")
+        source_name = entry.get("source")
+        if not isinstance(source_name, str) or source_name not in sources:
+            raise SyncError(
+                f"pricing entry {slug}.source must reference a known sources key"
+            )
+        source_url = entry.get("source_url")
+        if source_url is not None and (
+            not isinstance(source_url, str) or not source_url.startswith("https://")
+        ):
+            raise SyncError(f"pricing entry {slug}.source_url must be an HTTPS URL")
+        notes = entry.get("notes")
+        if notes is not None and (not isinstance(notes, str) or not notes.strip()):
+            raise SyncError(f"pricing entry {slug}.notes must be a non-empty string")
+    return value
+
+
+def resolve_pricing_entry(
+    slug: str, pricing_metadata: dict[str, Any]
+) -> dict[str, Any] | None:
+    models = pricing_metadata["models"]
+    if slug in models:
+        return models[slug]
+    aliases = pricing_metadata.get("aliases", {})
+    aliased = aliases.get(slug)
+    if isinstance(aliased, str) and aliased in models:
+        return models[aliased]
+    return None
+
+
+def format_context_window(token_count: int) -> str:
+    if token_count >= 1_000_000:
+        millions = token_count / 1_000_000
+        # Vendor "1M context" windows are often 2^20 (1,048,576). Prefer the
+        # whole-million label when the value is within 5% of an integer million.
+        nearest_million = round(millions)
+        if nearest_million >= 1 and abs(millions - nearest_million) <= 0.05:
+            return f"{int(nearest_million)}M context"
+        text = f"{millions:.2f}".rstrip("0").rstrip(".")
+        return f"{text}M context"
+    if token_count >= 1_000:
+        thousands = token_count / 1_000
+        # Prefer whole-thousand labels for picker density (e.g. 262144 -> 262K).
+        nearest_thousand = round(thousands)
+        if nearest_thousand >= 1:
+            return f"{int(nearest_thousand)}K context"
+        return f"{token_count} context"
+    return f"{token_count} context"
+
+
+def format_price_per_million(amount: float) -> str:
+    if abs(amount - round(amount)) < 1e-9:
+        return f"${int(round(amount))}/M"
+    text = f"{amount:.3f}".rstrip("0").rstrip(".")
+    return f"${text}/M"
+
+
+def format_modality_label(input_modalities: Any) -> str | None:
+    if not isinstance(input_modalities, list) or not input_modalities:
+        return None
+    normalized = {
+        item.strip().lower()
+        for item in input_modalities
+        if isinstance(item, str) and item.strip()
+    }
+    if "image" in normalized:
+        return "Vision"
+    if "text" in normalized:
+        return "Text"
+    if normalized:
+        return "/".join(sorted(item.title() for item in normalized))
+    return None
+
+
+def build_picker_description(
+    model: dict[str, Any], pricing_entry: dict[str, Any]
+) -> str:
+    parts: list[str] = [str(pricing_entry["provider"]).strip()]
+    context_window = model.get("context_window")
+    if isinstance(context_window, int) and not isinstance(context_window, bool):
+        parts.append(format_context_window(context_window))
+    parts.append(
+        f"{format_price_per_million(float(pricing_entry['input_per_m']))} input"
+    )
+    parts.append(
+        f"{format_price_per_million(float(pricing_entry['output_per_m']))} output"
+    )
+    modality = format_modality_label(model.get("input_modalities"))
+    if modality:
+        parts.append(modality)
+    return " · ".join(parts)
+
+
+def enrich_catalog_descriptions(
+    catalog: dict[str, Any],
+    pricing_metadata: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, list[str]]]:
+    metadata = (
+        load_pricing_metadata() if pricing_metadata is None else pricing_metadata
+    )
+    enriched = copy.deepcopy(catalog)
+    changes: dict[str, list[str]] = {"updated": [], "skipped": []}
+    for model in enriched["models"]:
+        slug = model["slug"]
+        pricing_entry = resolve_pricing_entry(slug, metadata)
+        if pricing_entry is None:
+            changes["skipped"].append(slug)
+            continue
+        description = build_picker_description(model, pricing_entry)
+        if model.get("description") != description:
+            model["description"] = description
+            changes["updated"].append(slug)
+    validate_catalog(enriched)
+    return enriched, changes
 
 
 def serialized_json(value: Any) -> bytes:
@@ -1038,6 +1222,20 @@ def main(argv: Iterable[str] | None = None) -> int:
 
         if preset_names:
             print(f"[preset]  {', '.join(preset_names)}")
+
+        pricing_changes = {"updated": [], "skipped": []}
+        if not args.no_pricing_enrichment:
+            final_catalog, pricing_changes = enrich_catalog_descriptions(final_catalog)
+            if pricing_changes["updated"]:
+                print(
+                    f"[pricing] updated descriptions: "
+                    f"{', '.join(pricing_changes['updated'])}"
+                )
+            if pricing_changes["skipped"]:
+                print(
+                    f"[pricing] no metadata for: "
+                    f"{', '.join(pricing_changes['skipped'])}"
+                )
 
         route_catalogs = {} if args.no_routes else build_route_catalogs()
         output_payload = serialized_json(final_catalog)

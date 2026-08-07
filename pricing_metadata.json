@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-08-07",
+  "policy": {
+    "currency": "USD",
+    "unit": "per_million_tokens",
+    "tier": "standard_uncached",
+    "notes": [
+      "Picker descriptions are display-only metadata for Codex /model.",
+      "Use each vendor's standard short-context, uncached (cache-miss) API rates.",
+      "Prefer vendor official pricing pages; LiteLLM is the community aggregation fallback.",
+      "Gateway markups (OpenRouter, LiteLLM proxies, CC Switch) are not applied here."
+    ]
+  },
+  "sources": {
+    "openai_official": {
+      "label": "OpenAI official API pricing",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "reliability": "official"
+    },
+    "xai_official": {
+      "label": "xAI official model pricing",
+      "url": "https://docs.x.ai/developers/pricing",
+      "reliability": "official"
+    },
+    "deepseek_official": {
+      "label": "DeepSeek official pricing",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "reliability": "official"
+    },
+    "kimi_official": {
+      "label": "Kimi / Moonshot official pricing",
+      "url": "https://platform.kimi.ai/docs/pricing/chat-k3",
+      "reliability": "official"
+    },
+    "litellm_community": {
+      "label": "LiteLLM model_prices_and_context_window.json",
+      "url": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json",
+      "reliability": "community-fallback"
+    }
+  },
+  "aliases": {
+    "x-ai/grok-4.5": "grok-4.5",
+    "x-ai/grok-build-0.1": "grok-build-0.1",
+    "deepseek/deepseek-v4-pro": "deepseek-v4-pro",
+    "deepseek/deepseek-v4-flash": "deepseek-v4-flash",
+    "moonshotai/kimi-k3": "kimi-k3",
+    "moonshotai/kimi-k2.7-code": "kimi-k2.7-code",
+    "moonshotai/kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
+    "moonshotai/kimi-k2.6": "kimi-k2.6"
+  },
+  "models": {
+    "gpt-5.6-sol": {
+      "provider": "OpenAI",
+      "input_per_m": 5.0,
+      "output_per_m": 30.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing",
+      "notes": "Standard short-context tier; long-context (>272K) and Fast/Priority tiers differ."
+    },
+    "gpt-5.6-terra": {
+      "provider": "OpenAI",
+      "input_per_m": 2.0,
+      "output_per_m": 12.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.6-luna": {
+      "provider": "OpenAI",
+      "input_per_m": 0.2,
+      "output_per_m": 1.2,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.5": {
+      "provider": "OpenAI",
+      "input_per_m": 5.0,
+      "output_per_m": 30.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.4": {
+      "provider": "OpenAI",
+      "input_per_m": 2.5,
+      "output_per_m": 15.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.2": {
+      "provider": "OpenAI",
+      "input_per_m": 1.75,
+      "output_per_m": 14.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.1-codex-max": {
+      "provider": "OpenAI",
+      "input_per_m": 1.25,
+      "output_per_m": 10.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "gpt-5.1-codex-mini": {
+      "provider": "OpenAI",
+      "input_per_m": 0.25,
+      "output_per_m": 2.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "grok-4.5": {
+      "provider": "xAI",
+      "input_per_m": 2.0,
+      "output_per_m": 6.0,
+      "source": "xai_official",
+      "source_url": "https://docs.x.ai/developers/pricing",
+      "notes": "Standard rates for prompts under 200K tokens; longer prompts use higher xAI tiers."
+    },
+    "grok-build-0.1": {
+      "provider": "xAI",
+      "input_per_m": 1.0,
+      "output_per_m": 2.0,
+      "source": "xai_official",
+      "source_url": "https://docs.x.ai/developers/pricing"
+    },
+    "deepseek-v4-pro": {
+      "provider": "DeepSeek",
+      "input_per_m": 0.435,
+      "output_per_m": 0.87,
+      "source": "deepseek_official",
+      "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "notes": "Cache-miss input rate; cache-hit input is much lower on DeepSeek."
+    },
+    "deepseek-v4-flash": {
+      "provider": "DeepSeek",
+      "input_per_m": 0.14,
+      "output_per_m": 0.28,
+      "source": "deepseek_official",
+      "source_url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "notes": "Cache-miss input rate; cache-hit input is much lower on DeepSeek."
+    },
+    "kimi-k3": {
+      "provider": "Moonshot AI",
+      "input_per_m": 3.0,
+      "output_per_m": 15.0,
+      "source": "kimi_official",
+      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k3",
+      "notes": "Cache-miss input rate."
+    },
+    "kimi-k2.7-code": {
+      "provider": "Moonshot AI",
+      "input_per_m": 0.95,
+      "output_per_m": 4.0,
+      "source": "kimi_official",
+      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k27-code"
+    },
+    "kimi-k2.7-code-highspeed": {
+      "provider": "Moonshot AI",
+      "input_per_m": 1.9,
+      "output_per_m": 8.0,
+      "source": "kimi_official",
+      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k27-code",
+      "notes": "HighSpeed serving tier is priced higher than the standard Code tier."
+    },
+    "kimi-k2.6": {
+      "provider": "Moonshot AI",
+      "input_per_m": 0.95,
+      "output_per_m": 4.0,
+      "source": "kimi_official",
+      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k26"
+    }
+  }
+}

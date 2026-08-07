@@ -3,7 +3,7 @@
     {
       "slug": "kimi-k3",
       "display_name": "Kimi K3 (LiteLLM)",
-      "description": "Moonshot AI flagship model with a 1M context window.",
+      "description": "Moonshot AI · 1M context · $3/M input · $15/M output · Vision",
       "default_reasoning_level": "max",
       "supported_reasoning_levels": [
         {
@@ -53,7 +53,7 @@
     {
       "slug": "kimi-k2.7-code",
       "display_name": "Kimi K2.7 Code (LiteLLM)",
-      "description": "Moonshot AI coding model for long-horizon agentic tasks.",
+      "description": "Moonshot AI · 262K context · $0.95/M input · $4/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -95,7 +95,7 @@
     {
       "slug": "kimi-k2.7-code-highspeed",
       "display_name": "Kimi K2.7 Code HighSpeed (LiteLLM)",
-      "description": "High-throughput serving tier of Kimi K2.7 Code.",
+      "description": "Moonshot AI · 262K context · $1.9/M input · $8/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -137,7 +137,7 @@
     {
       "slug": "kimi-k2.6",
       "display_name": "Kimi K2.6 (LiteLLM)",
-      "description": "Moonshot AI general-purpose multimodal model for coding and agent tasks.",
+      "description": "Moonshot AI · 262K context · $0.95/M input · $4/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {

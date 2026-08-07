@@ -3,7 +3,7 @@
     {
       "slug": "deepseek-v4-pro",
       "display_name": "DeepSeek V4 Pro (LiteLLM)",
-      "description": "DeepSeek V4 quality model with a 1M context window.",
+      "description": "DeepSeek · 1M context · $0.435/M input · $0.87/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -52,7 +52,7 @@
     {
       "slug": "deepseek-v4-flash",
       "display_name": "DeepSeek V4 Flash (LiteLLM)",
-      "description": "DeepSeek V4 low-latency model with a 1M context window.",
+      "description": "DeepSeek · 1M context · $0.14/M input · $0.28/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
