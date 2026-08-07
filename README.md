@@ -21,6 +21,8 @@ python .\sync_model_catalog.py
 OpenAI · 272K context · $5/M input · $30/M output · Vision
 ```
 
+同步还会为缺失字段做 CLI 兼容补齐。当前常见问题是 Codex App 目录可能省略 `supports_reasoning_summaries`，而 Codex CLI 0.144.x 加载 `model_catalog_json` 时会把它当作必填字段；脚本会自动补上，避免 `failed to parse model_catalog_json`。
+
 `catalogs/` 中的 GPT 目录来自 OpenAI Codex CLI、App 或 [`openai/codex`](https://github.com/openai/codex)，索引统一标记为 `classification: official`，归档 JSON 保持官方原始内容。归档记录的是某个来源的历史快照，不表示该版本中的模型仍是当前默认推荐模型。
 
 常用选项：

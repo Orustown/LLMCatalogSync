@@ -161,6 +161,43 @@ class CatalogTests(unittest.TestCase):
             ["grok", "deepseek", "kimi"],
         )
 
+    def test_normalize_catalog_compatibility_fills_missing_reasoning_flag(self) -> None:
+        catalog = {
+            "models": [
+                {"slug": "gpt-5.6-sol", "display_name": "Sol"},
+                {
+                    "slug": "kimi-k3",
+                    "supports_reasoning_summaries": False,
+                },
+            ]
+        }
+        normalized, fixed = sync.normalize_catalog_compatibility(catalog)
+        self.assertEqual(fixed, ["gpt-5.6-sol"])
+        self.assertTrue(normalized["models"][0]["supports_reasoning_summaries"])
+        self.assertFalse(normalized["models"][1]["supports_reasoning_summaries"])
+
+        again, fixed_again = sync.normalize_catalog_compatibility(normalized)
+        self.assertEqual(fixed_again, [])
+        self.assertEqual(again, normalized)
+
+    def test_app_archive_needs_compatibility_fill_for_cli(self) -> None:
+        app_catalog = json.loads(
+            (sync.PROJECT_DIR / "catalogs/app/0.147.0-alpha.1.2/bundled.json").read_text(
+                encoding="utf-8-sig"
+            )
+        )
+        missing = [
+            model["slug"]
+            for model in app_catalog["models"]
+            if "supports_reasoning_summaries" not in model
+        ]
+        self.assertTrue(missing)
+        normalized, fixed = sync.normalize_catalog_compatibility(app_catalog)
+        self.assertEqual(fixed, missing)
+        self.assertTrue(
+            all("supports_reasoning_summaries" in model for model in normalized["models"])
+        )
+
     def test_pricing_metadata_is_valid(self) -> None:
         metadata = sync.load_pricing_metadata()
         self.assertEqual(metadata["schema_version"], 1)

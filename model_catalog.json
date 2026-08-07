@@ -85,7 +85,8 @@
       "supports_search_tool": true,
       "use_responses_lite": true,
       "tool_mode": "code_mode_only",
-      "multi_agent_version": "v2"
+      "multi_agent_version": "v2",
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.6-terra",
@@ -170,7 +171,8 @@
       "supports_search_tool": true,
       "use_responses_lite": true,
       "tool_mode": "code_mode_only",
-      "multi_agent_version": "v2"
+      "multi_agent_version": "v2",
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.6-luna",
@@ -251,7 +253,8 @@
       "supports_search_tool": true,
       "use_responses_lite": true,
       "tool_mode": "code_mode_only",
-      "multi_agent_version": "v1"
+      "multi_agent_version": "v1",
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.5",
@@ -328,7 +331,8 @@
         "image"
       ],
       "supports_search_tool": true,
-      "use_responses_lite": false
+      "use_responses_lite": false,
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.4",
@@ -406,7 +410,8 @@
         "image"
       ],
       "supports_search_tool": true,
-      "use_responses_lite": false
+      "use_responses_lite": false,
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.4-mini",
@@ -476,7 +481,8 @@
         "image"
       ],
       "supports_search_tool": true,
-      "use_responses_lite": false
+      "use_responses_lite": false,
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "gpt-5.2",
@@ -542,7 +548,8 @@
         "image"
       ],
       "supports_search_tool": true,
-      "use_responses_lite": false
+      "use_responses_lite": false,
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "codex-auto-review",
@@ -620,7 +627,8 @@
         "image"
       ],
       "supports_search_tool": true,
-      "use_responses_lite": false
+      "use_responses_lite": false,
+      "supports_reasoning_summaries": true
     },
     {
       "slug": "grok-4.5",

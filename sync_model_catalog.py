@@ -630,9 +630,10 @@ def build_route_catalogs(
                     model = deep_merge(model, patches[source_slug])
                 models.append(model)
 
-            catalog, _ = enrich_catalog_descriptions(
+            catalog, _ = normalize_catalog_compatibility(
                 validate_catalog({"models": models})
             )
+            catalog, _ = enrich_catalog_descriptions(catalog)
             output_path = (manifest_path.parent / config["output"]).resolve()
             if not output_path.is_relative_to(routes_root):
                 raise SyncError(f"route catalog output escapes routes directory: {output_path}")
@@ -696,6 +697,29 @@ def merge_overrides(
 
     validate_catalog(merged)
     return merged, changes
+
+
+def normalize_catalog_compatibility(
+    catalog: dict[str, Any],
+) -> tuple[dict[str, Any], list[str]]:
+    """Fill fields required by older Codex CLI releases.
+
+    Codex App / newer upstream catalogs may omit
+    ``supports_reasoning_summaries``. Codex CLI 0.144.x still requires that
+    field when loading ``model_catalog_json``, so generated catalogs must keep
+    it present for every model.
+    """
+    normalized = copy.deepcopy(catalog)
+    fixed_slugs: list[str] = []
+    for model in normalized["models"]:
+        if "supports_reasoning_summaries" in model:
+            continue
+        # CLI OpenAI models use true; third-party presets set this explicitly.
+        # Missing values almost always come from App/upstream OpenAI catalogs.
+        model["supports_reasoning_summaries"] = True
+        fixed_slugs.append(str(model["slug"]))
+    validate_catalog(normalized)
+    return normalized, fixed_slugs
 
 
 def load_pricing_metadata(path: Path | None = None) -> dict[str, Any]:
@@ -1222,6 +1246,15 @@ def main(argv: Iterable[str] | None = None) -> int:
 
         if preset_names:
             print(f"[preset]  {', '.join(preset_names)}")
+
+        final_catalog, compatibility_fixed = normalize_catalog_compatibility(
+            final_catalog
+        )
+        if compatibility_fixed:
+            print(
+                "[compat]  filled supports_reasoning_summaries for: "
+                f"{', '.join(compatibility_fixed)}"
+            )
 
         pricing_changes = {"updated": [], "skipped": []}
         if not args.no_pricing_enrichment:
