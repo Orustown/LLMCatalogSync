@@ -4,13 +4,31 @@
   "catalog_kind": "openai-source-archive",
   "selected_base": {
     "source": "app-bundled",
-    "version": "0.147.0-alpha.1.2",
-    "file": "app/0.147.0-alpha.1.2/bundled.json",
+    "version": "0.148.0-alpha.9",
+    "file": "app/0.148.0-alpha.9/bundled.json",
     "models": 8,
-    "sha256": "0acd1c2cb4858313c753e108f8505343e104a783921f18459e160d4ec0e000a3"
+    "sha256": "e36b13887e0be1692d147fd6f9e0082814c93c992de62f8b2e1eb25ab11983a2"
   },
   "archives": {
     "app": [
+      {
+        "source": "app-bundled",
+        "file": "app/0.148.0-alpha.9/bundled.json",
+        "models": 8,
+        "sha256": "e36b13887e0be1692d147fd6f9e0082814c93c992de62f8b2e1eb25ab11983a2",
+        "archived_at": "2026-08-18T04:43:55.393813Z",
+        "origin": "Codex App CLI: codex debug models --bundled",
+        "version": "0.148.0-alpha.9"
+      },
+      {
+        "source": "app-github-tag",
+        "file": "app/0.148.0-alpha.9/github-tag.json",
+        "models": 8,
+        "sha256": "b49fbdd605968fcc9fbcc56ceffbe06de417d93d34a5943f44f943e6a8cf9078",
+        "archived_at": "2026-08-18T04:43:55.393813Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.148.0-alpha.9/codex-rs/models-manager/models.json",
+        "version": "0.148.0-alpha.9"
+      },
       {
         "source": "app-bundled",
         "file": "app/0.147.0-alpha.1.2/bundled.json",
@@ -53,6 +71,14 @@
     "upstream": [
       {
         "source": "github-main",
+        "file": "upstream/main/46f1f9a42182.json",
+        "models": 8,
+        "sha256": "46f1f9a42182525d02a9a224424853efbf820540ba7d1945ac3522ebfb905bc2",
+        "archived_at": "2026-08-18T04:43:55.393813Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json"
+      },
+      {
+        "source": "github-main",
         "file": "upstream/main/b49fbdd60596.json",
         "models": 8,
         "sha256": "b49fbdd605968fcc9fbcc56ceffbe06de417d93d34a5943f44f943e6a8cf9078",
@@ -71,30 +97,36 @@
       "archive": "cli/0.144.1/bundled.json"
     },
     "cli-github-tag": {
-      "status": "skipped",
+      "status": "ok",
       "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.144.1/codex-rs/models-manager/models.json",
       "version": "0.144.1",
-      "error": "offline mode"
+      "models": 8,
+      "sha256": "d75c9536973bba220510275914c7a6d11f63a71a477791eea0d27f9c90e81da1",
+      "archive": "cli/0.144.1/github-tag.json"
     },
     "app-bundled": {
       "status": "ok",
       "origin": "Codex App CLI: codex debug models --bundled",
-      "version": "0.147.0-alpha.1.2",
+      "version": "0.148.0-alpha.9",
       "models": 8,
-      "sha256": "0acd1c2cb4858313c753e108f8505343e104a783921f18459e160d4ec0e000a3",
-      "archive": "app/0.147.0-alpha.1.2/bundled.json"
+      "sha256": "e36b13887e0be1692d147fd6f9e0082814c93c992de62f8b2e1eb25ab11983a2",
+      "archive": "app/0.148.0-alpha.9/bundled.json"
     },
     "app-github-tag": {
-      "status": "skipped",
-      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.147.0-alpha.1.2/codex-rs/models-manager/models.json",
-      "version": "0.147.0-alpha.1.2",
-      "error": "offline mode"
+      "status": "ok",
+      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.148.0-alpha.9/codex-rs/models-manager/models.json",
+      "version": "0.148.0-alpha.9",
+      "models": 8,
+      "sha256": "b49fbdd605968fcc9fbcc56ceffbe06de417d93d34a5943f44f943e6a8cf9078",
+      "archive": "app/0.148.0-alpha.9/github-tag.json"
     },
     "github-main": {
-      "status": "skipped",
+      "status": "ok",
       "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json",
-      "error": "offline mode"
+      "models": 8,
+      "sha256": "46f1f9a42182525d02a9a224424853efbf820540ba7d1945ac3522ebfb905bc2",
+      "archive": "upstream/main/46f1f9a42182.json"
     }
   },
-  "updated_at": "2026-08-07T06:16:19.127334Z"
+  "updated_at": "2026-08-18T04:43:55.393813Z"
 }
