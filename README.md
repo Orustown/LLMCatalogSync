@@ -87,7 +87,7 @@ codex debug models
 
 | 预设 | 当前模型 | 接口要求 | 一键生成 |
 | --- | --- | --- | --- |
-| [Grok](third_party/grok.json) | `grok-4.5`、`grok-build-0.1` | xAI 支持 Responses，可直连 | `python .\sync_model_catalog.py --preset grok` |
+| [Grok](third_party/grok.json) | `grok-4.5`、`grok-4.20-multi-agent-0309`、`grok-build-0.1` | xAI 支持 Responses，可直连；Multi Agent 的 `xhigh` 使用 16 个协作代理 | `python .\sync_model_catalog.py --preset grok` |
 | [DeepSeek](third_party/deepseek.json) | `deepseek-v4-pro`、`deepseek-v4-flash` | V4 Flash 原生 Responses；V4 Pro 需协议网关 | `python .\sync_model_catalog.py --preset deepseek` |
 | [Kimi](third_party/kimi.json) | `kimi-k3`、`kimi-k2.7-code`、`kimi-k2.7-code-highspeed`、`kimi-k2.6` | 官方 Codex 指南使用协议网关 | `python .\sync_model_catalog.py --preset kimi` |
 | 全部 | 上述全部 | 按各厂商要求配置 | `python .\sync_model_catalog.py --preset all` |

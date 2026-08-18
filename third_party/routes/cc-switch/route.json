@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "cc-switch",
-  "verified_on": "2026-08-06",
+  "verified_on": "2026-08-18",
   "wire_api": "responses",
   "base_url": "http://127.0.0.1:15721/v1",
   "sources": [
@@ -17,6 +17,7 @@
       "display_suffix": "(CC Switch)",
       "model_mappings": {
         "grok-4.5": "grok-4.5",
+        "grok-4.20-multi-agent-0309": "grok-4.20-multi-agent-0309",
         "grok-build-0.1": "grok-build-0.1"
       }
     },

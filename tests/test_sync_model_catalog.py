@@ -110,7 +110,7 @@ class CatalogTests(unittest.TestCase):
 
     def test_third_party_presets_are_valid_additions(self) -> None:
         expected = {
-            "grok": ["grok-4.5", "grok-build-0.1"],
+            "grok": ["grok-4.5", "grok-4.20-multi-agent-0309", "grok-build-0.1"],
             "deepseek": ["deepseek-v4-pro", "deepseek-v4-flash"],
             "kimi": [
                 "kimi-k3",
@@ -129,6 +129,20 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual(
                     [model["slug"] for model in merged["models"]], ["base", *slugs]
                 )
+
+    def test_grok_multi_agent_defaults_to_xhigh(self) -> None:
+        overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["grok"])
+        model = next(
+            model
+            for model in overrides["models"]
+            if model["slug"] == "grok-4.20-multi-agent-0309"
+        )
+        self.assertEqual(model["default_reasoning_level"], "xhigh")
+        self.assertEqual(
+            [level["effort"] for level in model["supported_reasoning_levels"]],
+            ["low", "medium", "high", "xhigh"],
+        )
+        self.assertEqual(model["context_window"], 1_000_000)
 
     def test_vendor_presets_are_marked_as_official_baselines(self) -> None:
         for provider, path in sync.THIRD_PARTY_PRESETS.items():
@@ -152,7 +166,11 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(
             [model["slug"] for model in route_catalogs[openrouter_grok.resolve()]["models"]],
-            ["x-ai/grok-4.5", "x-ai/grok-build-0.1"],
+            [
+                "x-ai/grok-4.5",
+                "x-ai/grok-4.20-multi-agent-0309",
+                "x-ai/grok-build-0.1",
+            ],
         )
 
     def test_all_preset_expands_in_stable_order(self) -> None:
