@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "verified_on": "2026-08-18",
+  "verified_on": "2026-08-20",
   "policy": {
     "currency": "USD",
     "unit": "per_million_tokens",
@@ -9,6 +9,7 @@
       "Picker descriptions are display-only metadata for Codex /model.",
       "Use each vendor's standard short-context, uncached (cache-miss) API rates.",
       "Prefer vendor official pricing pages; LiteLLM is the community aggregation fallback.",
+      "Use models.dev to discover provider-specific metadata, then verify vendor claims against official documentation.",
       "Gateway markups (OpenRouter, LiteLLM proxies, CC Switch) are not applied here."
     ]
   },
@@ -33,6 +34,16 @@
       "url": "https://platform.kimi.ai/docs/pricing/chat-k3",
       "reliability": "official"
     },
+    "zai_official": {
+      "label": "Z.ai official model pricing",
+      "url": "https://docs.z.ai/guides/overview/pricing",
+      "reliability": "official"
+    },
+    "modelsdev_community": {
+      "label": "models.dev provider and model catalog",
+      "url": "https://models.dev/api.json",
+      "reliability": "community-fallback"
+    },
     "litellm_community": {
       "label": "LiteLLM model_prices_and_context_window.json",
       "url": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json",
@@ -48,7 +59,8 @@
     "moonshotai/kimi-k3": "kimi-k3",
     "moonshotai/kimi-k2.7-code": "kimi-k2.7-code",
     "moonshotai/kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
-    "moonshotai/kimi-k2.6": "kimi-k2.6"
+    "moonshotai/kimi-k2.6": "kimi-k2.6",
+    "z-ai/glm-5.2": "glm-5.2"
   },
   "models": {
     "gpt-5.6-sol": {
@@ -176,6 +188,21 @@
       "output_per_m": 4.0,
       "source": "kimi_official",
       "source_url": "https://platform.kimi.ai/docs/pricing/chat-k26"
+    },
+    "glm-5.2": {
+      "provider": "Z.ai",
+      "input_per_m": 1.4,
+      "output_per_m": 4.4,
+      "source": "zai_official",
+      "source_url": "https://docs.z.ai/guides/overview/pricing"
+    },
+    "glm-5.3": {
+      "provider": "Z.ai",
+      "input_per_m": 1.4,
+      "output_per_m": 4.4,
+      "source": "zai_official",
+      "source_url": "https://docs.z.ai/guides/overview/pricing",
+      "notes": "GLM-5.3 always reasons; max effort is recommended for coding tasks."
     }
   }
 }

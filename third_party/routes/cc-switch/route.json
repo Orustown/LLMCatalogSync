@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "cc-switch",
-  "verified_on": "2026-08-18",
+  "verified_on": "2026-08-20",
   "wire_api": "responses",
   "base_url": "http://127.0.0.1:15721/v1",
   "sources": [
@@ -45,6 +45,16 @@
         "kimi-k2.7-code": "kimi-k2.7-code",
         "kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
         "kimi-k2.6": "kimi-k2.6"
+      }
+    },
+    "glm": {
+      "official_catalog": "../../glm.json",
+      "output": "glm/model_catalog.json",
+      "transport": "native-responses-or-chat-gateway",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "glm-5.2": "glm-5.2",
+        "glm-5.3": "glm-5.3"
       }
     }
   }

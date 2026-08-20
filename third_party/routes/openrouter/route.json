@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "openrouter",
-  "verified_on": "2026-08-18",
+  "verified_on": "2026-08-20",
   "wire_api": "responses",
   "base_url": "https://openrouter.ai/api/v1",
   "sources": [
@@ -69,6 +69,33 @@
       },
       "notes": [
         "Kimi K2.7 Code HighSpeed is omitted because it is not listed by OpenRouter."
+      ]
+    },
+    "glm": {
+      "official_catalog": "../../glm.json",
+      "output": "glm/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "glm-5.2": "z-ai/glm-5.2"
+      },
+      "model_patches": {
+        "glm-5.2": {
+          "supported_reasoning_levels": [
+            {
+              "effort": "high",
+              "description": "Enhanced reasoning through OpenRouter"
+            },
+            {
+              "effort": "xhigh",
+              "description": "OpenRouter maps xhigh to maximum reasoning"
+            }
+          ],
+          "default_reasoning_level": "xhigh"
+        }
+      },
+      "notes": [
+        "GLM-5.3 is omitted until OpenRouter lists a stable route slug."
       ]
     }
   }

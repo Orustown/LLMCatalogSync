@@ -37,6 +37,7 @@ THIRD_PARTY_PRESETS = {
     "grok": THIRD_PARTY_DIR / "grok.json",
     "deepseek": THIRD_PARTY_DIR / "deepseek.json",
     "kimi": THIRD_PARTY_DIR / "kimi.json",
+    "glm": THIRD_PARTY_DIR / "glm.json",
 }
 ROUTE_MANIFESTS = {
     name: ROUTES_DIR / name / "route.json"

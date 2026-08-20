@@ -118,6 +118,7 @@ class CatalogTests(unittest.TestCase):
                 "kimi-k2.7-code-highspeed",
                 "kimi-k2.6",
             ],
+            "glm": ["glm-5.2", "glm-5.3"],
         }
         for preset, slugs in expected.items():
             with self.subTest(preset=preset):
@@ -153,9 +154,24 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual(metadata["catalog_kind"], "vendor-baseline")
                 self.assertEqual(metadata["codex_adapter"], "repository-maintained")
 
+    def test_glm_models_use_official_reasoning_levels(self) -> None:
+        overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["glm"])
+        models = {model["slug"]: model for model in overrides["models"]}
+        self.assertEqual(models["glm-5.2"]["default_reasoning_level"], "max")
+        self.assertEqual(
+            [level["effort"] for level in models["glm-5.2"]["supported_reasoning_levels"]],
+            ["high", "max"],
+        )
+        self.assertEqual(models["glm-5.3"]["default_reasoning_level"], "max")
+        self.assertEqual(
+            [level["effort"] for level in models["glm-5.3"]["supported_reasoning_levels"]],
+            ["low", "high", "max"],
+        )
+        self.assertEqual(models["glm-5.3"]["context_window"], 1_000_000)
+
     def test_route_catalogs_are_standard_and_current(self) -> None:
         route_catalogs = sync.build_route_catalogs()
-        self.assertEqual(len(route_catalogs), 9)
+        self.assertEqual(len(route_catalogs), 12)
         for path, catalog in route_catalogs.items():
             with self.subTest(path=path.relative_to(sync.PROJECT_DIR)):
                 self.assertEqual(set(catalog), {"models"})
@@ -173,10 +189,18 @@ class CatalogTests(unittest.TestCase):
             ],
         )
 
+        openrouter_glm = (
+            sync.ROUTES_DIR / "openrouter" / "glm" / "model_catalog.json"
+        )
+        self.assertEqual(
+            [model["slug"] for model in route_catalogs[openrouter_glm.resolve()]["models"]],
+            ["z-ai/glm-5.2"],
+        )
+
     def test_all_preset_expands_in_stable_order(self) -> None:
         self.assertEqual(
             sync.selected_preset_names(["kimi", "all", "grok"]),
-            ["grok", "deepseek", "kimi"],
+            ["grok", "deepseek", "kimi", "glm"],
         )
 
     def test_normalize_catalog_compatibility_fills_missing_reasoning_flag(self) -> None:
@@ -221,6 +245,8 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(metadata["schema_version"], 1)
         self.assertIn("gpt-5.6-sol", metadata["models"])
         self.assertIn("kimi-k3", metadata["models"])
+        self.assertIn("glm-5.2", metadata["models"])
+        self.assertIn("glm-5.3", metadata["models"])
 
     def test_format_helpers_match_picker_style(self) -> None:
         self.assertEqual(sync.format_context_window(272_000), "272K context")

@@ -50,6 +50,7 @@ Codex 启动时加载 `model_catalog_json` 指向的一份目录。直接使用�
 python .\sync_model_catalog.py --preset grok       # 加入 Grok，包含 grok-4.5
 python .\sync_model_catalog.py --preset deepseek   # 加入 DeepSeek
 python .\sync_model_catalog.py --preset kimi       # 加入 Kimi
+python .\sync_model_catalog.py --preset glm        # 加入 GLM-5.2、GLM-5.3
 python .\sync_model_catalog.py --preset all        # 加入全部第三方模型
 ```
 
@@ -76,12 +77,12 @@ model_catalog_json = "C:/Users/<username>/.codex/model-catalogs/model_catalog.js
 codex debug models
 ```
 
-`third_party/{grok,deepseek,kimi}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。
+`third_party/{grok,deepseek,kimi,glm}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。
 
 <a id="third-party"></a>
 ## 官方厂商基线
 
-`third_party/{grok,deepseek,kimi}.json` 中的模型 ID、上下文和接口能力以各厂商官方资料为准，统一标记为 `classification: official`。其中 Codex 专用字段仍由本仓库适配，因此同时标记为 `codex_adapter: repository-maintained`，不宣称是厂商发布的原始 `model_catalog.json`。
+`third_party/{grok,deepseek,kimi,glm}.json` 中的模型 ID、上下文和接口能力以各厂商官方资料为准，统一标记为 `classification: official`。其中 Codex 专用字段仍由本仓库适配，因此同时标记为 `codex_adapter: repository-maintained`，不宣称是厂商发布的原始 `model_catalog.json`。
 
 这些基线不会默认写入最终目录。选择预设后重新生成：
 
@@ -90,11 +91,12 @@ codex debug models
 | [Grok](third_party/grok.json) | `grok-4.5`、`grok-4.20-multi-agent-0309`、`grok-build-0.1` | xAI 支持 Responses，可直连；Multi Agent 的 `xhigh` 使用 16 个协作代理 | `python .\sync_model_catalog.py --preset grok` |
 | [DeepSeek](third_party/deepseek.json) | `deepseek-v4-pro`、`deepseek-v4-flash` | V4 Flash 原生 Responses；V4 Pro 需协议网关 | `python .\sync_model_catalog.py --preset deepseek` |
 | [Kimi](third_party/kimi.json) | `kimi-k3`、`kimi-k2.7-code`、`kimi-k2.7-code-highspeed`、`kimi-k2.6` | 官方 Codex 指南使用协议网关 | `python .\sync_model_catalog.py --preset kimi` |
+| [GLM](third_party/glm.json) | `glm-5.2`、`glm-5.3` | Z.ai 支持 Responses；GLM-5.3 始终启用思考，编码任务推荐 `max` | `python .\sync_model_catalog.py --preset glm` |
 | 全部 | 上述全部 | 按各厂商要求配置 | `python .\sync_model_catalog.py --preset all` |
 
 `sync.cmd --preset all` 同样可用。`--preset` 可以重复，例如 `--preset grok --preset kimi`。`--no-overrides` 只跳过 [`model_overrides.json`](model_overrides.json)，不会跳过显式选择的预设。
 
-模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[xAI 模型](https://docs.x.ai/developers/models)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)。当前 DeepSeek V4 Flash 可使用原生 Responses 集成；V4 Pro、Kimi 以及其他 Chat Completions 端点仍应通过支持协议转换的网关使用。
+模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[xAI 模型](https://docs.x.ai/developers/models)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)、[Z.ai 模型与价格](https://docs.z.ai/guides/overview/pricing)。当前 DeepSeek V4 Flash 和 GLM 可使用原生 Responses 集成；V4 Pro、Kimi 以及其他 Chat Completions 端点仍应通过支持协议转换的网关使用。
 
 <a id="routes"></a>
 ## 第三方路由
@@ -105,9 +107,9 @@ codex debug models
 | --- | --- | --- |
 | [CC Switch](third_party/routes/cc-switch/route.json) | `cc-switch/<vendor>/model_catalog.json` | 保留厂商 slug；按当前 Provider 决定原生 Responses 或本地转换 |
 | [LiteLLM](third_party/routes/litellm/route.json) | `litellm/<vendor>/model_catalog.json` | 保留厂商 slug；LiteLLM `model_list` 必须配置同名 `model_name` alias |
-| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用 `x-ai/...`、`deepseek/...`、`moonshotai/...` 命名空间 slug |
+| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用 `x-ai/...`、`deepseek/...`、`moonshotai/...`、`z-ai/...` 命名空间 slug；未上架模型不生成 |
 
-普通同步会从官方厂商基线重建全部 9 份 route catalogs；`--strict --check` 也会检查它们是否过期。`--no-routes` 可只处理主目录。路由目录是生成文件，修改模型能力应回到官方厂商基线，修改 slug 或路由限制应修改对应 `route.json`。
+普通同步会从官方厂商基线重建全部 12 份 route catalogs；`--strict --check` 也会检查它们是否过期。`--no-routes` 可只处理主目录。路由目录是生成文件，修改模型能力应回到官方厂商基线，修改 slug 或路由限制应修改对应 `route.json`。
 
 <a id="sources"></a>
 ## 来源怎么选
@@ -132,7 +134,7 @@ catalogs/
 ├── upstream/main/<content-hash>.json
 ├── INDEX.md
 └── index.json
-third_party/{grok,deepseek,kimi}.json
+third_party/{grok,deepseek,kimi,glm}.json
 third_party/routes/<route>/<vendor>/model_catalog.json
 third_party/routes/<route>/route.json
 ```
@@ -164,9 +166,12 @@ Codex 官方 `model_catalog` **没有**结构化的 provider / price 字段。`/
 
 | 优先级 | 来源 | 用途 |
 | --- | --- | --- |
-| 1 | 厂商官方定价页 | 默认写入价格：OpenAI、xAI、DeepSeek、Kimi |
-| 2 | [LiteLLM `model_prices_and_context_window.json`](https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json) | 社区聚合兜底；新模型可能滞后 |
-| 3 | 网关报价（OpenRouter 等） | 本仓库默认**不**采用，避免把中转加价写成“官方价” |
+| 1 | 厂商官方定价页 | 默认写入价格：OpenAI、xAI、DeepSeek、Kimi、Z.ai |
+| 2 | [models.dev](https://models.dev/api.json) | 开源社区聚合目录，适合发现渠道、模型 ID 和价格差异；写入前仍需回查厂商官方资料 |
+| 3 | [LiteLLM `model_prices_and_context_window.json`](https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json) | 社区聚合兜底；新模型可能滞后 |
+| 4 | 网关报价（OpenRouter 等） | 本仓库默认**不**采用，避免把中转加价写成“官方价” |
+
+来源裁决规则：优先采用厂商官方文档和官方定价页；`models.dev` 用于发现模型、渠道和模型 ID，并做交叉验证，但不能覆盖厂商官方字段；LiteLLM 等社区目录仅在官方资料不可用时兜底；OpenRouter 等网关的价格只表示该网关渠道的实际报价，不作为厂商官方价格。来源冲突时保留官方来源，并在 `verified_on`、`source_url` 和备注中记录核验依据。
 
 当前策略：
 
