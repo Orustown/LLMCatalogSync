@@ -47,6 +47,37 @@ class CatalogTests(unittest.TestCase):
         with self.assertRaisesRegex(sync.SyncError, "duplicate model slug"):
             sync.validate_catalog({"models": [{"slug": "x"}, {"slug": "x"}]})
 
+    def test_validate_catalog_rejects_invalid_model_semantics(self) -> None:
+        invalid_models = [
+            (
+                {
+                    "slug": "invalid-reasoning",
+                    "default_reasoning_level": "max",
+                    "supported_reasoning_levels": [{"effort": "high"}],
+                },
+                "default_reasoning_level",
+            ),
+            (
+                {
+                    "slug": "invalid-context",
+                    "context_window": 200,
+                    "max_context_window": 100,
+                },
+                "context_window cannot exceed",
+            ),
+            (
+                {
+                    "slug": "invalid-flag",
+                    "supports_parallel_tool_calls": "true",
+                },
+                "supports_parallel_tool_calls must be a boolean",
+            ),
+        ]
+        for model, message in invalid_models:
+            with self.subTest(slug=model["slug"]):
+                with self.assertRaisesRegex(sync.SyncError, message):
+                    sync.validate_catalog({"models": [model]})
+
     def test_merge_overrides_updates_adds_and_removes(self) -> None:
         base = {
             "models": [
@@ -232,7 +263,7 @@ class CatalogTests(unittest.TestCase):
             ],
         )
 
-    def test_normalize_catalog_compatibility_fills_missing_reasoning_flag(self) -> None:
+    def test_normalize_catalog_compatibility_fills_required_cli_flags(self) -> None:
         catalog = {
             "models": [
                 {"slug": "gpt-5.6-sol", "display_name": "Sol"},
@@ -243,9 +274,11 @@ class CatalogTests(unittest.TestCase):
             ]
         }
         normalized, fixed = sync.normalize_catalog_compatibility(catalog)
-        self.assertEqual(fixed, ["gpt-5.6-sol"])
+        self.assertEqual(fixed, ["gpt-5.6-sol", "kimi-k3"])
         self.assertTrue(normalized["models"][0]["supports_reasoning_summaries"])
         self.assertFalse(normalized["models"][1]["supports_reasoning_summaries"])
+        self.assertTrue(normalized["models"][0]["supports_parallel_tool_calls"])
+        self.assertTrue(normalized["models"][1]["supports_parallel_tool_calls"])
 
         again, fixed_again = sync.normalize_catalog_compatibility(normalized)
         self.assertEqual(fixed_again, [])
@@ -257,21 +290,60 @@ class CatalogTests(unittest.TestCase):
                 encoding="utf-8-sig"
             )
         )
-        missing = [
+        missing_fields = [
             model["slug"]
             for model in app_catalog["models"]
-            if "supports_reasoning_summaries" not in model
+            if (
+                "supports_reasoning_summaries" not in model
+                or "supports_parallel_tool_calls" not in model
+            )
         ]
-        self.assertTrue(missing)
+        self.assertTrue(missing_fields)
         normalized, fixed = sync.normalize_catalog_compatibility(app_catalog)
-        self.assertEqual(fixed, missing)
+        self.assertEqual(fixed, missing_fields)
         self.assertTrue(
-            all("supports_reasoning_summaries" in model for model in normalized["models"])
+            all(
+                "supports_reasoning_summaries" in model
+                and "supports_parallel_tool_calls" in model
+                for model in normalized["models"]
+            )
         )
+
+    def test_generated_catalogs_have_required_cli_flags(self) -> None:
+        catalogs = [
+            json.loads(
+                (sync.PROJECT_DIR / "model_catalog.json").read_text(
+                    encoding="utf-8-sig"
+                )
+            ),
+            *sync.build_route_catalogs().values(),
+        ]
+        for catalog in catalogs:
+            with self.subTest(model_count=len(catalog["models"])):
+                self.assertTrue(
+                    all(
+                        isinstance(model.get("supports_reasoning_summaries"), bool)
+                        and isinstance(model.get("supports_parallel_tool_calls"), bool)
+                        for model in catalog["models"]
+                    )
+                )
 
     def test_pricing_metadata_is_valid(self) -> None:
         metadata = sync.load_pricing_metadata()
         self.assertEqual(metadata["schema_version"], 1)
+        for slug, entry in metadata["models"].items():
+            source_url = entry.get("source_url")
+            if source_url is not None:
+                with self.subTest(slug=slug):
+                    source_reliability = metadata["sources"][entry["source"]][
+                        "reliability"
+                    ]
+                    if source_reliability == "official":
+                        self.assertNotIn(
+                            "openrouter.ai",
+                            source_url,
+                            "official pricing entries must not cite gateway pages",
+                        )
         self.assertIn("gpt-5.6-sol", metadata["models"])
         self.assertIn("kimi-k3", metadata["models"])
         self.assertIn("grok-4.6", metadata["models"])

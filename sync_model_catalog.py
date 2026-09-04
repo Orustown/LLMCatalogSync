@@ -311,6 +311,100 @@ def validate_catalog(value: Any, *, allow_empty: bool = False) -> dict[str, Any]
         slug = model.get("slug")
         if not isinstance(slug, str) or not slug.strip():
             raise SyncError(f"models[{index}].slug must be a non-empty string")
+        display_name = model.get("display_name")
+        if display_name is not None and (
+            not isinstance(display_name, str) or not display_name.strip()
+        ):
+            raise SyncError(f"models[{index}].display_name must be a non-empty string")
+
+        reasoning_levels = model.get("supported_reasoning_levels")
+        if reasoning_levels is not None:
+            if not isinstance(reasoning_levels, list) or not reasoning_levels:
+                raise SyncError(
+                    f"models[{index}].supported_reasoning_levels must be a non-empty array"
+                )
+            efforts: list[str] = []
+            for level_index, level in enumerate(reasoning_levels):
+                if not isinstance(level, dict):
+                    raise SyncError(
+                        f"models[{index}].supported_reasoning_levels[{level_index}] "
+                        "must be a JSON object"
+                    )
+                effort = level.get("effort")
+                if not isinstance(effort, str) or not effort.strip():
+                    raise SyncError(
+                        f"models[{index}].supported_reasoning_levels[{level_index}] "
+                        "effort must be a non-empty string"
+                    )
+                if effort in efforts:
+                    raise SyncError(
+                        f"models[{index}] has duplicate reasoning effort: {effort}"
+                    )
+                efforts.append(effort)
+            default_reasoning_level = model.get("default_reasoning_level")
+            if default_reasoning_level is not None and (
+                not isinstance(default_reasoning_level, str)
+                or default_reasoning_level not in efforts
+            ):
+                raise SyncError(
+                    f"models[{index}].default_reasoning_level must be one of "
+                    "supported reasoning efforts"
+                )
+
+        for boolean_field in (
+            "supported_in_api",
+            "supports_reasoning_summaries",
+            "supports_parallel_tool_calls",
+            "supports_image_detail_original",
+            "supports_search_tool",
+            "use_responses_lite",
+        ):
+            if boolean_field in model and not isinstance(model[boolean_field], bool):
+                raise SyncError(f"models[{index}].{boolean_field} must be a boolean")
+
+        for context_field in ("context_window", "max_context_window"):
+            context_value = model.get(context_field)
+            if context_value is not None and (
+                not isinstance(context_value, int)
+                or isinstance(context_value, bool)
+                or context_value <= 0
+            ):
+                raise SyncError(
+                    f"models[{index}].{context_field} must be a positive integer"
+                )
+        context_window = model.get("context_window")
+        max_context_window = model.get("max_context_window")
+        if (
+            isinstance(context_window, int)
+            and not isinstance(context_window, bool)
+            and isinstance(max_context_window, int)
+            and not isinstance(max_context_window, bool)
+            and context_window > max_context_window
+        ):
+            raise SyncError(
+                f"models[{index}].context_window cannot exceed max_context_window"
+            )
+
+        input_modalities = model.get("input_modalities")
+        if input_modalities is not None and (
+            not isinstance(input_modalities, list)
+            or not input_modalities
+            or any(
+                not isinstance(modality, str) or not modality.strip()
+                for modality in input_modalities
+            )
+        ):
+            raise SyncError(
+                f"models[{index}].input_modalities must be a non-empty string array"
+            )
+
+        priority = model.get("priority")
+        if priority is not None and (
+            not isinstance(priority, int)
+            or isinstance(priority, bool)
+            or priority < 0
+        ):
+            raise SyncError(f"models[{index}].priority must be a non-negative integer")
         if slug in seen:
             raise SyncError(f"duplicate model slug: {slug}")
         seen.add(slug)
@@ -710,19 +804,29 @@ def normalize_catalog_compatibility(
     """Fill fields required by older Codex CLI releases.
 
     Codex App / newer upstream catalogs may omit
-    ``supports_reasoning_summaries``. Codex CLI 0.144.x still requires that
-    field when loading ``model_catalog_json``, so generated catalogs must keep
-    it present for every model.
+    ``supports_reasoning_summaries`` and ``supports_parallel_tool_calls``.
+    Codex CLI 0.144.x still requires both fields when loading
+    ``model_catalog_json``, so generated catalogs must keep them present for
+    every model.
     """
     normalized = copy.deepcopy(catalog)
     fixed_slugs: list[str] = []
     for model in normalized["models"]:
-        if "supports_reasoning_summaries" in model:
-            continue
-        # CLI OpenAI models use true; third-party presets set this explicitly.
-        # Missing values almost always come from App/upstream OpenAI catalogs.
-        model["supports_reasoning_summaries"] = True
-        fixed_slugs.append(str(model["slug"]))
+        model_was_fixed = False
+        if "supports_reasoning_summaries" not in model:
+            # CLI OpenAI models use true; third-party presets set this
+            # explicitly. Missing values almost always come from App/upstream
+            # OpenAI catalogs.
+            model["supports_reasoning_summaries"] = True
+            model_was_fixed = True
+        if "supports_parallel_tool_calls" not in model:
+            # Catalogs without this field predate the CLI parser's required
+            # field. All current Codex and maintained vendor entries support
+            # parallel calls, so true is the compatibility-safe default.
+            model["supports_parallel_tool_calls"] = True
+            model_was_fixed = True
+        if model_was_fixed:
+            fixed_slugs.append(str(model["slug"]))
     validate_catalog(normalized)
     return normalized, fixed_slugs
 
@@ -795,6 +899,15 @@ def load_pricing_metadata(path: Path | None = None) -> dict[str, Any]:
             not isinstance(source_url, str) or not source_url.startswith("https://")
         ):
             raise SyncError(f"pricing entry {slug}.source_url must be an HTTPS URL")
+        if (
+            source_url is not None
+            and sources[source_name]["reliability"] == "official"
+            and "openrouter.ai" in source_url
+        ):
+            raise SyncError(
+                f"pricing entry {slug}.source_url cannot cite OpenRouter "
+                "when source reliability is official"
+            )
         notes = entry.get("notes")
         if notes is not None and (not isinstance(notes, str) or not notes.strip()):
             raise SyncError(f"pricing entry {slug}.notes must be a non-empty string")
@@ -1321,7 +1434,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         )
         if compatibility_fixed:
             print(
-                "[compat]  filled supports_reasoning_summaries for: "
+                "[compat]  filled required CLI fields for: "
                 f"{', '.join(compatibility_fixed)}"
             )
 

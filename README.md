@@ -23,7 +23,7 @@ xAI         · 500K context · $2/M     input · $6/M  output · Vision
 Moonshot AI · 1M context   · $3/M     input · $15/M output · Vision
 ```
 
-同步还会为缺失字段做 CLI 兼容补齐。当前常见问题是 Codex App 目录可能省略 `supports_reasoning_summaries`，而 Codex CLI 0.144.x 加载 `model_catalog_json` 时会把它当作必填字段；脚本会自动补上，避免 `failed to parse model_catalog_json`。
+同步还会为缺失字段做 CLI 兼容补齐。当前常见问题是 Codex App 目录可能省略 `supports_reasoning_summaries` 或 `supports_parallel_tool_calls`，而 Codex CLI 0.144.x 加载 `model_catalog_json` 时会把它们当作必填字段；脚本会自动补上，避免 `failed to parse model_catalog_json`。
 
 价格展示会按当前 catalog 内所有带定价的模型统一列宽对齐（provider / context / input / output），让 monospaced `/model` 列表更整齐。
 
@@ -35,7 +35,7 @@ Moonshot AI · 1M context   · $3/M     input · $15/M output · Vision
 python .\sync_model_catalog.py --offline                 # 只读本机 bundled
 python .\sync_model_catalog.py --base cli-bundled       # 使用 PATH CLI
 python .\sync_model_catalog.py --base github-main       # 使用上游 main
-python .\sync_model_catalog.py --strict --check         # 发布前检查
+python .\sync_model_catalog.py --preset all --strict --check  # 发布前检查当前全量目录
 python .\sync_model_catalog.py --no-pricing-enrichment  # 保留上游原始 description
 ```
 
@@ -197,7 +197,7 @@ Codex 官方 `model_catalog` **没有**结构化的 provider / price 字段。`/
 
 ```powershell
 python -B -m unittest discover -s tests -v
-python -B .\sync_model_catalog.py --strict --check
+python -B .\sync_model_catalog.py --preset all --strict --check
 ```
 
 GitHub Actions 会运行单元测试并校验 JSON、官方分类、route manifests 和所有生成目录。项目只保留同步脚本、测试、当前目录、版本归档和第三方预设；不要提交 `auth.json`、`models_cache.json` 或用户级 `config.toml`。

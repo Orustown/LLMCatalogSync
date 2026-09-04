@@ -239,28 +239,28 @@
       "input_per_m": 5.0,
       "output_per_m": 25.0,
       "source": "anthropic_official",
-      "source_url": "https://platform.claude.com/docs/en/models/overview"
+      "source_url": "https://claude.com/pricing#api"
     },
     "claude-opus-4.8": {
       "provider": "Anthropic",
       "input_per_m": 5.0,
       "output_per_m": 25.0,
       "source": "anthropic_official",
-      "source_url": "https://openrouter.ai/anthropic/claude-opus-4.8"
+      "source_url": "https://claude.com/pricing#api"
     },
     "claude-opus-4.6": {
       "provider": "Anthropic",
       "input_per_m": 5.0,
       "output_per_m": 25.0,
       "source": "anthropic_official",
-      "source_url": "https://openrouter.ai/anthropic/claude-opus-4.6"
+      "source_url": "https://claude.com/pricing#api"
     },
     "claude-sonnet-4.6": {
       "provider": "Anthropic",
       "input_per_m": 3.0,
       "output_per_m": 15.0,
       "source": "anthropic_official",
-      "source_url": "https://openrouter.ai/anthropic/claude-sonnet-4.6"
+      "source_url": "https://claude.com/pricing#api"
     }
   }
 }
