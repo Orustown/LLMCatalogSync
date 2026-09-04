@@ -110,15 +110,24 @@ class CatalogTests(unittest.TestCase):
 
     def test_third_party_presets_are_valid_additions(self) -> None:
         expected = {
-            "grok": ["grok-4.5", "grok-4.20-multi-agent-0309", "grok-build-0.1"],
-            "deepseek": ["deepseek-v4-pro", "deepseek-v4-flash"],
-            "kimi": [
-                "kimi-k3",
-                "kimi-k2.7-code",
-                "kimi-k2.7-code-highspeed",
-                "kimi-k2.6",
+            "grok": [
+                "grok-4.6",
+                "grok-4.5",
+                "grok-4.20-multi-agent-0309",
+                "grok-build-0.1",
             ],
-            "glm": ["glm-5.2", "glm-5.3"],
+            "deepseek": ["deepseek-v4-pro", "deepseek-v4-flash"],
+            "kimi": ["kimi-k3"],
+            "glm": ["glm-5.3", "glm-5.3-flash"],
+            "gemini": ["gemini-3.7-flash"],
+            "minimax": ["MiniMax-M3"],
+            "hunyuan": ["hy4-preview"],
+            "claude": [
+                "claude-opus-5",
+                "claude-opus-4.8",
+                "claude-opus-4.6",
+                "claude-sonnet-4.6",
+            ],
         }
         for preset, slugs in expected.items():
             with self.subTest(preset=preset):
@@ -154,24 +163,34 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual(metadata["catalog_kind"], "vendor-baseline")
                 self.assertEqual(metadata["codex_adapter"], "repository-maintained")
 
+    def test_grok_4_6_supports_xhigh_reasoning(self) -> None:
+        overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["grok"])
+        model = next(
+            model for model in overrides["models"] if model["slug"] == "grok-4.6"
+        )
+        self.assertEqual(model["default_reasoning_level"], "high")
+        self.assertEqual(
+            [level["effort"] for level in model["supported_reasoning_levels"]],
+            ["low", "medium", "high", "xhigh"],
+        )
+        self.assertEqual(model["context_window"], 500_000)
+
     def test_glm_models_use_official_reasoning_levels(self) -> None:
         overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["glm"])
         models = {model["slug"]: model for model in overrides["models"]}
-        self.assertEqual(models["glm-5.2"]["default_reasoning_level"], "max")
-        self.assertEqual(
-            [level["effort"] for level in models["glm-5.2"]["supported_reasoning_levels"]],
-            ["high", "max"],
-        )
         self.assertEqual(models["glm-5.3"]["default_reasoning_level"], "max")
         self.assertEqual(
             [level["effort"] for level in models["glm-5.3"]["supported_reasoning_levels"]],
             ["low", "high", "max"],
         )
         self.assertEqual(models["glm-5.3"]["context_window"], 1_000_000)
+        self.assertEqual(models["glm-5.3-flash"]["default_reasoning_level"], "max")
+        self.assertEqual(models["glm-5.3-flash"]["context_window"], 1_000_000)
+        self.assertEqual(models["glm-5.3-flash"]["input_modalities"], ["text", "image"])
 
     def test_route_catalogs_are_standard_and_current(self) -> None:
         route_catalogs = sync.build_route_catalogs()
-        self.assertEqual(len(route_catalogs), 12)
+        self.assertEqual(len(route_catalogs), 24)
         for path, catalog in route_catalogs.items():
             with self.subTest(path=path.relative_to(sync.PROJECT_DIR)):
                 self.assertEqual(set(catalog), {"models"})
@@ -183,6 +202,7 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(
             [model["slug"] for model in route_catalogs[openrouter_grok.resolve()]["models"]],
             [
+                "x-ai/grok-4.6",
                 "x-ai/grok-4.5",
                 "x-ai/grok-4.20-multi-agent-0309",
                 "x-ai/grok-build-0.1",
@@ -194,13 +214,22 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(
             [model["slug"] for model in route_catalogs[openrouter_glm.resolve()]["models"]],
-            ["z-ai/glm-5.2"],
+            ["z-ai/glm-5.3", "z-ai/glm-5.3-flash"],
         )
 
     def test_all_preset_expands_in_stable_order(self) -> None:
         self.assertEqual(
             sync.selected_preset_names(["kimi", "all", "grok"]),
-            ["grok", "deepseek", "kimi", "glm"],
+            [
+                "grok",
+                "deepseek",
+                "kimi",
+                "glm",
+                "gemini",
+                "minimax",
+                "hunyuan",
+                "claude",
+            ],
         )
 
     def test_normalize_catalog_compatibility_fills_missing_reasoning_flag(self) -> None:
@@ -245,8 +274,19 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(metadata["schema_version"], 1)
         self.assertIn("gpt-5.6-sol", metadata["models"])
         self.assertIn("kimi-k3", metadata["models"])
-        self.assertIn("glm-5.2", metadata["models"])
+        self.assertIn("grok-4.6", metadata["models"])
         self.assertIn("glm-5.3", metadata["models"])
+        self.assertIn("glm-5.3-flash", metadata["models"])
+        self.assertIn("gemini-3.7-flash", metadata["models"])
+        self.assertIn("MiniMax-M3", metadata["models"])
+        self.assertIn("hy4-preview", metadata["models"])
+        self.assertIn("claude-opus-5", metadata["models"])
+        self.assertIn("claude-opus-4.8", metadata["models"])
+        self.assertIn("claude-opus-4.6", metadata["models"])
+        self.assertIn("claude-sonnet-4.6", metadata["models"])
+        self.assertNotIn("glm-5.2", metadata["models"])
+        self.assertNotIn("gpt-5.2", metadata["models"])
+        self.assertNotIn("kimi-k2.7-code", metadata["models"])
 
     def test_format_helpers_match_picker_style(self) -> None:
         self.assertEqual(sync.format_context_window(272_000), "272K context")
@@ -262,7 +302,7 @@ class CatalogTests(unittest.TestCase):
         catalog = {
             "models": [
                 {
-                    "slug": "gpt-5.2",
+                    "slug": "gpt-5.4",
                     "description": "old",
                     "context_window": 272000,
                     "input_modalities": ["text", "image"],
@@ -301,7 +341,7 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("DeepSeek", descriptions[2])
         self.assertEqual(
             changes["updated"],
-            ["gpt-5.2", "kimi-k3", "deepseek-v4-pro"],
+            ["gpt-5.4", "kimi-k3", "deepseek-v4-pro"],
         )
 
     def test_enrich_catalog_descriptions_uses_pricing_metadata(self) -> None:

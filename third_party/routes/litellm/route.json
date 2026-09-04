@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "litellm",
-  "verified_on": "2026-08-20",
+  "verified_on": "2026-09-04",
   "wire_api": "responses",
   "base_url": "http://127.0.0.1:4000/v1",
   "sources": [
@@ -16,6 +16,7 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
+        "grok-4.6": "grok-4.6",
         "grok-4.5": "grok-4.5",
         "grok-4.20-multi-agent-0309": "grok-4.20-multi-agent-0309",
         "grok-build-0.1": "grok-build-0.1"
@@ -43,10 +44,7 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "kimi-k3": "kimi-k3",
-        "kimi-k2.7-code": "kimi-k2.7-code",
-        "kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
-        "kimi-k2.6": "kimi-k2.6"
+        "kimi-k3": "kimi-k3"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -58,8 +56,59 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "glm-5.2": "glm-5.2",
-        "glm-5.3": "glm-5.3"
+        "glm-5.3": "glm-5.3",
+        "glm-5.3-flash": "glm-5.3-flash"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "gemini": {
+      "official_catalog": "../../gemini.json",
+      "output": "gemini/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "gemini-3.7-flash": "gemini-3.7-flash"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "minimax": {
+      "official_catalog": "../../minimax.json",
+      "output": "minimax/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "MiniMax-M3": "MiniMax-M3"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "hunyuan": {
+      "official_catalog": "../../hunyuan.json",
+      "output": "hunyuan/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "hy4-preview": "hy4-preview"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "claude": {
+      "official_catalog": "../../claude.json",
+      "output": "claude/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "claude-opus-5": "claude-opus-5",
+        "claude-opus-4.8": "claude-opus-4.8",
+        "claude-opus-4.6": "claude-opus-4.6",
+        "claude-sonnet-4.6": "claude-sonnet-4.6"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."

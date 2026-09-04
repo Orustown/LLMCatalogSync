@@ -38,6 +38,10 @@ THIRD_PARTY_PRESETS = {
     "deepseek": THIRD_PARTY_DIR / "deepseek.json",
     "kimi": THIRD_PARTY_DIR / "kimi.json",
     "glm": THIRD_PARTY_DIR / "glm.json",
+    "gemini": THIRD_PARTY_DIR / "gemini.json",
+    "minimax": THIRD_PARTY_DIR / "minimax.json",
+    "hunyuan": THIRD_PARTY_DIR / "hunyuan.json",
+    "claude": THIRD_PARTY_DIR / "claude.json",
 }
 ROUTE_MANIFESTS = {
     name: ROUTES_DIR / name / "route.json"

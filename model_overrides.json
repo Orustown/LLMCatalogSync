@@ -1,4 +1,6 @@
 {
   "models": [],
-  "remove_models": []
+  "remove_models": [
+    "gpt-5.2"
+  ]
 }

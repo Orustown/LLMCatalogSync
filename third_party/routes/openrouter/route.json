@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "openrouter",
-  "verified_on": "2026-08-20",
+  "verified_on": "2026-09-04",
   "wire_api": "responses",
   "base_url": "https://openrouter.ai/api/v1",
   "sources": [
@@ -16,6 +16,7 @@
       "transport": "openrouter-responses",
       "display_suffix": "(OpenRouter)",
       "model_mappings": {
+        "grok-4.6": "x-ai/grok-4.6",
         "grok-4.5": "x-ai/grok-4.5",
         "grok-4.20-multi-agent-0309": "x-ai/grok-4.20-multi-agent-0309",
         "grok-build-0.1": "x-ai/grok-build-0.1"
@@ -63,13 +64,8 @@
       "transport": "openrouter-responses",
       "display_suffix": "(OpenRouter)",
       "model_mappings": {
-        "kimi-k3": "moonshotai/kimi-k3",
-        "kimi-k2.7-code": "moonshotai/kimi-k2.7-code",
-        "kimi-k2.6": "moonshotai/kimi-k2.6"
-      },
-      "notes": [
-        "Kimi K2.7 Code HighSpeed is omitted because it is not listed by OpenRouter."
-      ]
+        "kimi-k3": "moonshotai/kimi-k3"
+      }
     },
     "glm": {
       "official_catalog": "../../glm.json",
@@ -77,26 +73,48 @@
       "transport": "openrouter-responses",
       "display_suffix": "(OpenRouter)",
       "model_mappings": {
-        "glm-5.2": "z-ai/glm-5.2"
-      },
-      "model_patches": {
-        "glm-5.2": {
-          "supported_reasoning_levels": [
-            {
-              "effort": "high",
-              "description": "Enhanced reasoning through OpenRouter"
-            },
-            {
-              "effort": "xhigh",
-              "description": "OpenRouter maps xhigh to maximum reasoning"
-            }
-          ],
-          "default_reasoning_level": "xhigh"
-        }
-      },
-      "notes": [
-        "GLM-5.3 is omitted until OpenRouter lists a stable route slug."
-      ]
+        "glm-5.3": "z-ai/glm-5.3",
+        "glm-5.3-flash": "z-ai/glm-5.3-flash"
+      }
+    },
+    "gemini": {
+      "official_catalog": "../../gemini.json",
+      "output": "gemini/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "gemini-3.7-flash": "google/gemini-3.7-flash"
+      }
+    },
+    "minimax": {
+      "official_catalog": "../../minimax.json",
+      "output": "minimax/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "MiniMax-M3": "minimax/minimax-m3"
+      }
+    },
+    "hunyuan": {
+      "official_catalog": "../../hunyuan.json",
+      "output": "hunyuan/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "hy4-preview": "tencent/hy4-preview"
+      }
+    },
+    "claude": {
+      "official_catalog": "../../claude.json",
+      "output": "claude/model_catalog.json",
+      "transport": "openrouter-responses",
+      "display_suffix": "(OpenRouter)",
+      "model_mappings": {
+        "claude-opus-5": "anthropic/claude-opus-5",
+        "claude-opus-4.8": "anthropic/claude-opus-4.8",
+        "claude-opus-4.6": "anthropic/claude-opus-4.6",
+        "claude-sonnet-4.6": "anthropic/claude-sonnet-4.6"
+      }
     }
   }
 }

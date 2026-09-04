@@ -9,12 +9,14 @@
 
 | 来源 | 版本 | 模型数 | SHA-256 | 归档 |
 | --- | --- | ---: | --- | --- |
-| `app-bundled` | `0.148.0-alpha.15` | 8 | `0e915c29d960` | [JSON](./app/0.148.0-alpha.15/bundled.json) |
+| `app-bundled` | `0.153.0` | 10 | `87af923e97ef` | [JSON](./app/0.153.0/bundled.json) |
 
 ## Codex App
 
 | 版本（新到旧） | 来源 | 模型数 | SHA-256 | 归档 |
 | --- | --- | ---: | --- | --- |
+| `0.153.0` | `app-bundled` | 10 | `87af923e97ef` | [JSON](./app/0.153.0/bundled.json) |
+| `0.153.0` | `app-github-tag` | 10 | `07c7ffa43a89` | [JSON](./app/0.153.0/github-tag.json) |
 | `0.148.0-alpha.15` | `app-bundled` | 8 | `0e915c29d960` | [JSON](./app/0.148.0-alpha.15/bundled.json) |
 | `0.148.0-alpha.15` | `app-github-tag` | 8 | `b49fbdd60596` | [JSON](./app/0.148.0-alpha.15/github-tag.json) |
 | `0.148.0-alpha.9` | `app-bundled` | 8 | `e36b13887e0b` | [JSON](./app/0.148.0-alpha.9/bundled.json) |
@@ -35,7 +37,8 @@
 
 | 首次归档时间（UTC） | 模型数 | SHA-256 | 归档 |
 | --- | ---: | --- | --- |
+| `2026-09-04T05:26:16.047359Z` | 11 | `08f300ecb613` | [JSON](./upstream/main/08f300ecb613.json) |
 | `2026-08-18T04:43:55.393813Z` | 8 | `46f1f9a42182` | [JSON](./upstream/main/46f1f9a42182.json) |
 | `2026-08-06T04:56:49.778842Z` | 8 | `b49fbdd60596` | [JSON](./upstream/main/b49fbdd60596.json) |
 
-索引更新时间：`2026-08-20T06:20:37.712665Z`
+索引更新时间：`2026-09-04T05:26:16.047359Z`

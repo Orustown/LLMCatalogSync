@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "verified_on": "2026-08-20",
+  "verified_on": "2026-09-04",
   "policy": {
     "currency": "USD",
     "unit": "per_million_tokens",
@@ -39,6 +39,26 @@
       "url": "https://docs.z.ai/guides/overview/pricing",
       "reliability": "official"
     },
+    "google_community": {
+      "label": "Google Gemini 3.7 Flash listing via OpenRouter",
+      "url": "https://openrouter.ai/google/gemini-3.7-flash",
+      "reliability": "community-fallback"
+    },
+    "minimax_official": {
+      "label": "MiniMax official pay-as-you-go pricing",
+      "url": "https://platform.minimaxi.com/docs/guides/pricing-paygo",
+      "reliability": "official"
+    },
+    "tencent_community": {
+      "label": "Tencent Hy4 Preview listing via OpenRouter",
+      "url": "https://openrouter.ai/tencent/hy4-preview",
+      "reliability": "community-fallback"
+    },
+    "anthropic_official": {
+      "label": "Anthropic Claude API pricing",
+      "url": "https://claude.com/pricing#api",
+      "reliability": "official"
+    },
     "modelsdev_community": {
       "label": "models.dev provider and model catalog",
       "url": "https://models.dev/api.json",
@@ -51,16 +71,22 @@
     }
   },
   "aliases": {
+    "x-ai/grok-4.6": "grok-4.6",
     "x-ai/grok-4.5": "grok-4.5",
     "x-ai/grok-4.20-multi-agent-0309": "grok-4.20-multi-agent-0309",
     "x-ai/grok-build-0.1": "grok-build-0.1",
     "deepseek/deepseek-v4-pro": "deepseek-v4-pro",
     "deepseek/deepseek-v4-flash": "deepseek-v4-flash",
     "moonshotai/kimi-k3": "kimi-k3",
-    "moonshotai/kimi-k2.7-code": "kimi-k2.7-code",
-    "moonshotai/kimi-k2.7-code-highspeed": "kimi-k2.7-code-highspeed",
-    "moonshotai/kimi-k2.6": "kimi-k2.6",
-    "z-ai/glm-5.2": "glm-5.2"
+    "z-ai/glm-5.3": "glm-5.3",
+    "z-ai/glm-5.3-flash": "glm-5.3-flash",
+    "google/gemini-3.7-flash": "gemini-3.7-flash",
+    "minimax/minimax-m3": "MiniMax-M3",
+    "tencent/hy4-preview": "hy4-preview",
+    "anthropic/claude-opus-5": "claude-opus-5",
+    "anthropic/claude-opus-4.8": "claude-opus-4.8",
+    "anthropic/claude-opus-4.6": "claude-opus-4.6",
+    "anthropic/claude-sonnet-4.6": "claude-sonnet-4.6"
   },
   "models": {
     "gpt-5.6-sol": {
@@ -99,13 +125,6 @@
       "source": "openai_official",
       "source_url": "https://developers.openai.com/api/docs/pricing"
     },
-    "gpt-5.2": {
-      "provider": "OpenAI",
-      "input_per_m": 1.75,
-      "output_per_m": 14.0,
-      "source": "openai_official",
-      "source_url": "https://developers.openai.com/api/docs/pricing"
-    },
     "gpt-5.1-codex-max": {
       "provider": "OpenAI",
       "input_per_m": 1.25,
@@ -119,6 +138,14 @@
       "output_per_m": 2.0,
       "source": "openai_official",
       "source_url": "https://developers.openai.com/api/docs/pricing"
+    },
+    "grok-4.6": {
+      "provider": "xAI",
+      "input_per_m": 2.0,
+      "output_per_m": 6.0,
+      "source": "xai_official",
+      "source_url": "https://docs.x.ai/developers/pricing",
+      "notes": "Standard rates for prompts under 200K tokens; longer prompts use higher xAI tiers. xhigh is available on grok-4.6."
     },
     "grok-4.5": {
       "provider": "xAI",
@@ -167,35 +194,6 @@
       "source_url": "https://platform.kimi.ai/docs/pricing/chat-k3",
       "notes": "Cache-miss input rate."
     },
-    "kimi-k2.7-code": {
-      "provider": "Moonshot AI",
-      "input_per_m": 0.95,
-      "output_per_m": 4.0,
-      "source": "kimi_official",
-      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k27-code"
-    },
-    "kimi-k2.7-code-highspeed": {
-      "provider": "Moonshot AI",
-      "input_per_m": 1.9,
-      "output_per_m": 8.0,
-      "source": "kimi_official",
-      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k27-code",
-      "notes": "HighSpeed serving tier is priced higher than the standard Code tier."
-    },
-    "kimi-k2.6": {
-      "provider": "Moonshot AI",
-      "input_per_m": 0.95,
-      "output_per_m": 4.0,
-      "source": "kimi_official",
-      "source_url": "https://platform.kimi.ai/docs/pricing/chat-k26"
-    },
-    "glm-5.2": {
-      "provider": "Z.ai",
-      "input_per_m": 1.4,
-      "output_per_m": 4.4,
-      "source": "zai_official",
-      "source_url": "https://docs.z.ai/guides/overview/pricing"
-    },
     "glm-5.3": {
       "provider": "Z.ai",
       "input_per_m": 1.4,
@@ -203,6 +201,66 @@
       "source": "zai_official",
       "source_url": "https://docs.z.ai/guides/overview/pricing",
       "notes": "GLM-5.3 always reasons; max effort is recommended for coding tasks."
+    },
+    "glm-5.3-flash": {
+      "provider": "Z.ai",
+      "input_per_m": 0.15,
+      "output_per_m": 0.5,
+      "source": "zai_official",
+      "source_url": "https://docs.z.ai/guides/overview/pricing",
+      "notes": "List rates; a 50% discount is currently advertised through 2026-09-09."
+    },
+    "gemini-3.7-flash": {
+      "provider": "Google",
+      "input_per_m": 0.75,
+      "output_per_m": 3.75,
+      "source": "google_community",
+      "source_url": "https://openrouter.ai/google/gemini-3.7-flash",
+      "notes": "OpenRouter Google AI Studio / Vertex standard rates after the current 50% promotion."
+    },
+    "MiniMax-M3": {
+      "provider": "MiniMax",
+      "input_per_m": 0.3,
+      "output_per_m": 1.2,
+      "source": "minimax_official",
+      "source_url": "https://platform.minimaxi.com/docs/guides/pricing-paygo",
+      "notes": "Converted from official CNY pay-as-you-go list of ¥2.10 / ¥8.40 per million tokens at 7 CNY/USD for prompts up to 512K."
+    },
+    "hy4-preview": {
+      "provider": "Tencent",
+      "input_per_m": 0.834,
+      "output_per_m": 2.501,
+      "source": "tencent_community",
+      "source_url": "https://openrouter.ai/tencent/hy4-preview",
+      "notes": "Tencent Cloud TokenHub list via OpenRouter; Hy4 remains a preview."
+    },
+    "claude-opus-5": {
+      "provider": "Anthropic",
+      "input_per_m": 5.0,
+      "output_per_m": 25.0,
+      "source": "anthropic_official",
+      "source_url": "https://platform.claude.com/docs/en/models/overview"
+    },
+    "claude-opus-4.8": {
+      "provider": "Anthropic",
+      "input_per_m": 5.0,
+      "output_per_m": 25.0,
+      "source": "anthropic_official",
+      "source_url": "https://openrouter.ai/anthropic/claude-opus-4.8"
+    },
+    "claude-opus-4.6": {
+      "provider": "Anthropic",
+      "input_per_m": 5.0,
+      "output_per_m": 25.0,
+      "source": "anthropic_official",
+      "source_url": "https://openrouter.ai/anthropic/claude-opus-4.6"
+    },
+    "claude-sonnet-4.6": {
+      "provider": "Anthropic",
+      "input_per_m": 3.0,
+      "output_per_m": 15.0,
+      "source": "anthropic_official",
+      "source_url": "https://openrouter.ai/anthropic/claude-sonnet-4.6"
     }
   }
 }

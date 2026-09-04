@@ -4,13 +4,31 @@
   "catalog_kind": "openai-source-archive",
   "selected_base": {
     "source": "app-bundled",
-    "version": "0.148.0-alpha.15",
-    "file": "app/0.148.0-alpha.15/bundled.json",
-    "models": 8,
-    "sha256": "0e915c29d960d42876b1ab86dc665ad179239548d1281b46f942dd80e3b8092c"
+    "version": "0.153.0",
+    "file": "app/0.153.0/bundled.json",
+    "models": 10,
+    "sha256": "87af923e97ef2e09d3bbcd30b52704e2795eccf88f2c01be869dfc0cef24d0b3"
   },
   "archives": {
     "app": [
+      {
+        "source": "app-bundled",
+        "file": "app/0.153.0/bundled.json",
+        "models": 10,
+        "sha256": "87af923e97ef2e09d3bbcd30b52704e2795eccf88f2c01be869dfc0cef24d0b3",
+        "archived_at": "2026-09-04T05:26:16.047359Z",
+        "origin": "Codex App CLI: codex debug models --bundled",
+        "version": "0.153.0"
+      },
+      {
+        "source": "app-github-tag",
+        "file": "app/0.153.0/github-tag.json",
+        "models": 10,
+        "sha256": "07c7ffa43a89fb0fc7f47f13c40bc87c26d8b3c475b618e1f109fa3791a3e7b3",
+        "archived_at": "2026-09-04T05:26:16.047359Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.153.0/codex-rs/models-manager/models.json",
+        "version": "0.153.0"
+      },
       {
         "source": "app-bundled",
         "file": "app/0.148.0-alpha.15/bundled.json",
@@ -89,6 +107,14 @@
     "upstream": [
       {
         "source": "github-main",
+        "file": "upstream/main/08f300ecb613.json",
+        "models": 11,
+        "sha256": "08f300ecb61302ffb177ae2c708eb01df704a076ab714b154d7124a13f017672",
+        "archived_at": "2026-09-04T05:26:16.047359Z",
+        "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json"
+      },
+      {
+        "source": "github-main",
         "file": "upstream/main/46f1f9a42182.json",
         "models": 8,
         "sha256": "46f1f9a42182525d02a9a224424853efbf820540ba7d1945ac3522ebfb905bc2",
@@ -125,26 +151,26 @@
     "app-bundled": {
       "status": "ok",
       "origin": "Codex App CLI: codex debug models --bundled",
-      "version": "0.148.0-alpha.15",
-      "models": 8,
-      "sha256": "0e915c29d960d42876b1ab86dc665ad179239548d1281b46f942dd80e3b8092c",
-      "archive": "app/0.148.0-alpha.15/bundled.json"
+      "version": "0.153.0",
+      "models": 10,
+      "sha256": "87af923e97ef2e09d3bbcd30b52704e2795eccf88f2c01be869dfc0cef24d0b3",
+      "archive": "app/0.153.0/bundled.json"
     },
     "app-github-tag": {
       "status": "ok",
-      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.148.0-alpha.15/codex-rs/models-manager/models.json",
-      "version": "0.148.0-alpha.15",
-      "models": 8,
-      "sha256": "b49fbdd605968fcc9fbcc56ceffbe06de417d93d34a5943f44f943e6a8cf9078",
-      "archive": "app/0.148.0-alpha.15/github-tag.json"
+      "origin": "https://raw.githubusercontent.com/openai/codex/rust-v0.153.0/codex-rs/models-manager/models.json",
+      "version": "0.153.0",
+      "models": 10,
+      "sha256": "07c7ffa43a89fb0fc7f47f13c40bc87c26d8b3c475b618e1f109fa3791a3e7b3",
+      "archive": "app/0.153.0/github-tag.json"
     },
     "github-main": {
       "status": "ok",
       "origin": "https://raw.githubusercontent.com/openai/codex/main/codex-rs/models-manager/models.json",
-      "models": 8,
-      "sha256": "46f1f9a42182525d02a9a224424853efbf820540ba7d1945ac3522ebfb905bc2",
-      "archive": "upstream/main/46f1f9a42182.json"
+      "models": 11,
+      "sha256": "08f300ecb61302ffb177ae2c708eb01df704a076ab714b154d7124a13f017672",
+      "archive": "upstream/main/08f300ecb613.json"
     }
   },
-  "updated_at": "2026-08-20T06:20:37.712665Z"
+  "updated_at": "2026-09-04T05:26:16.047359Z"
 }
