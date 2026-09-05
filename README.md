@@ -54,7 +54,10 @@ python .\sync_model_catalog.py --preset glm        # 加入 GLM-5.3、GLM-5.3 Fl
 python .\sync_model_catalog.py --preset gemini     # 加入 Gemini 3.7 Flash
 python .\sync_model_catalog.py --preset minimax    # 加入 MiniMax M3
 python .\sync_model_catalog.py --preset hunyuan    # 加入 Hy4 Preview
-python .\sync_model_catalog.py --preset claude     # 加入 Claude Opus 5、Opus 4.8、Opus 4.6、Sonnet 4.6
+python .\sync_model_catalog.py --preset claude     # 加入 Claude Opus 5、Opus 4.8、Opus 4.6
+python .\sync_model_catalog.py --preset qwen       # 加入 Qwen3.8 Max、Qwen3.8 Flash
+python .\sync_model_catalog.py --preset muse       # 加入 Muse Spark 1.2 Contributor
+python .\sync_model_catalog.py --preset mimo       # 加入 MiMo V2.5 Pro
 python .\sync_model_catalog.py --preset all        # 加入全部第三方模型
 ```
 
@@ -81,12 +84,14 @@ model_catalog_json = "C:/Users/<username>/.codex/model-catalogs/model_catalog.js
 codex debug models
 ```
 
-`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。长期要从官方 OpenAI 目录里拿掉的模型写在 [`model_overrides.json`](model_overrides.json) 的 `remove_models`，当前会移除 `gpt-5.2`。
+`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude,qwen,muse,mimo}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。长期要从官方 OpenAI 目录里拿掉的模型写在 [`model_overrides.json`](model_overrides.json) 的 `remove_models`，当前会移除 `gpt-5.2`。
+
+当前根目录还会通过 [`model_overrides.json`](model_overrides.json) 显示 GPT-6 Astra（`gpt-6-astra`）。该模型来自 OpenAI API 文档和 Codex 上游目录，支持 Responses、图片输入、工具调用以及 `low` 到 `ultra` 的 Codex 推理级别。
 
 <a id="third-party"></a>
 ## 官方厂商基线
 
-`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude}.json` 中的模型 ID、上下文和接口能力以各厂商官方资料为准，统一标记为 `classification: official`。其中 Codex 专用字段仍由本仓库适配，因此同时标记为 `codex_adapter: repository-maintained`，不宣称是厂商发布的原始 `model_catalog.json`。
+`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude,qwen,muse,mimo}.json` 中的模型 ID、上下文和接口能力以各厂商官方资料为准，统一标记为 `classification: official`。其中 Codex 专用字段仍由本仓库适配，因此同时标记为 `codex_adapter: repository-maintained`，不宣称是厂商发布的原始 `model_catalog.json`。
 
 这些基线不会默认写入最终目录。选择预设后重新生成：
 
@@ -99,12 +104,15 @@ codex debug models
 | [Gemini](third_party/gemini.json) | `gemini-3.7-flash` | 官方 Chat Completions / Vertex，Codex 需协议网关 | `python .\sync_model_catalog.py --preset gemini` |
 | [MiniMax](third_party/minimax.json) | `MiniMax-M3` | 官方推荐 Anthropic Messages 或 Chat Completions，需协议网关 | `python .\sync_model_catalog.py --preset minimax` |
 | [Hunyuan](third_party/hunyuan.json) | `hy4-preview` | 腾讯云 TokenHub Chat Completions，需协议网关；仍为 Preview | `python .\sync_model_catalog.py --preset hunyuan` |
-| [Claude](third_party/claude.json) | `claude-opus-5`、`claude-opus-4.8`、`claude-opus-4.6`、`claude-sonnet-4.6` | Anthropic Messages，需协议网关或 OpenRouter | `python .\sync_model_catalog.py --preset claude` |
+| [Claude](third_party/claude.json) | `claude-opus-5`、`claude-opus-4.8`、`claude-opus-4.6` | Anthropic Messages，需协议网关或 OpenRouter | `python .\sync_model_catalog.py --preset claude` |
+| [Qwen](third_party/qwen.json) | `qwen3.8-max`、`qwen3.8-flash` | Alibaba Cloud Model Studio，支持 OpenAI / Anthropic 兼容协议 | `python .\sync_model_catalog.py --preset qwen` |
+| [Muse](third_party/muse.json) | `muse-spark-1.2-contributor` | Meta API / Anthropic Messages，需协议网关 | `python .\sync_model_catalog.py --preset muse` |
+| [MiMo](third_party/mimo.json) | `mimo-v2.5-pro` | Xiaomi API / OpenAI 兼容协议，需协议网关 | `python .\sync_model_catalog.py --preset mimo` |
 | 全部 | 上述全部 | 按各厂商要求配置 | `python .\sync_model_catalog.py --preset all` |
 
 `sync.cmd --preset all` 同样可用。`--preset` 可以重复，例如 `--preset grok --preset kimi`。`--no-overrides` 只跳过 [`model_overrides.json`](model_overrides.json)，不会跳过显式选择的预设。
 
-模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[xAI 模型](https://docs.x.ai/developers/models)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)、[Z.ai 模型与价格](https://docs.z.ai/guides/overview/pricing)、[Gemini 3.7 Flash](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-7-flash)、[MiniMax 文本模型](https://platform.minimaxi.com/docs/guides/text-generation)、[Hy4 Preview API](https://www.tencentcloud.com/techpedia/147981)、[Claude 模型概览](https://platform.claude.com/docs/en/models/overview)。当前 DeepSeek V4 Flash 和 GLM 可使用原生 Responses 集成；V4 Pro、Kimi、Gemini、MiniMax、Hy4、Claude 以及其他 Chat Completions / Messages 端点仍应通过支持协议转换的网关使用。
+模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[xAI 模型](https://docs.x.ai/developers/models)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)、[Z.ai 模型与价格](https://docs.z.ai/guides/overview/pricing)、[Gemini 3.7 Flash](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-7-flash)、[MiniMax 文本模型](https://platform.minimaxi.com/docs/guides/text-generation)、[Hy4 Preview API](https://www.tencentcloud.com/techpedia/147981)、[Claude 模型概览](https://platform.claude.com/docs/en/models/overview)。当前 DeepSeek V4 Flash、GLM 和 Qwen3.8 Flash 可使用相应原生兼容接口；V4 Pro、Kimi、Gemini、MiniMax、Hy4、Claude、Muse、MiMo 以及其他 Chat Completions / Messages 端点仍应通过支持协议转换的网关使用。
 
 <a id="routes"></a>
 ## 第三方路由
@@ -115,9 +123,9 @@ codex debug models
 | --- | --- | --- |
 | [CC Switch](third_party/routes/cc-switch/route.json) | `cc-switch/<vendor>/model_catalog.json` | 保留厂商 slug；按当前 Provider 决定原生 Responses 或本地转换 |
 | [LiteLLM](third_party/routes/litellm/route.json) | `litellm/<vendor>/model_catalog.json` | 保留厂商 slug；LiteLLM `model_list` 必须配置同名 `model_name` alias |
-| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用 `x-ai/...`、`deepseek/...`、`moonshotai/...`、`z-ai/...`、`google/...`、`minimax/...`、`tencent/...`、`anthropic/...` 命名空间 slug；未上架模型不生成 |
+| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用 `x-ai/...`、`deepseek/...`、`moonshotai/...`、`z-ai/...`、`google/...`、`minimax/...`、`tencent/...`、`anthropic/...`、`qwen/...`、`meta/...`、`xiaomi/...` 命名空间 slug |
 
-普通同步会从官方厂商基线重建全部 24 份 route catalogs；`--strict --check` 也会检查它们是否过期。`--no-routes` 可只处理主目录。路由目录是生成文件，修改模型能力应回到官方厂商基线，修改 slug 或路由限制应修改对应 `route.json`。
+普通同步会从官方厂商基线重建全部 33 份 route catalogs；`--strict --check` 也会检查它们是否过期。`--no-routes` 可只处理主目录。路由目录是生成文件，修改模型能力应回到官方厂商基线，修改 slug 或路由限制应修改对应 `route.json`。
 
 <a id="sources"></a>
 ## 来源怎么选
@@ -142,7 +150,7 @@ catalogs/
 ├── upstream/main/<content-hash>.json
 ├── INDEX.md
 └── index.json
-third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude}.json
+third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude,qwen,muse,mimo}.json
 third_party/routes/<route>/<vendor>/model_catalog.json
 third_party/routes/<route>/route.json
 ```

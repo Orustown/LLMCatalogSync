@@ -107,8 +107,44 @@
       "model_mappings": {
         "claude-opus-5": "claude-opus-5",
         "claude-opus-4.8": "claude-opus-4.8",
-        "claude-opus-4.6": "claude-opus-4.6",
-        "claude-sonnet-4.6": "claude-sonnet-4.6"
+        "claude-opus-4.6": "claude-opus-4.6"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "qwen": {
+      "official_catalog": "../../qwen.json",
+      "output": "qwen/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "qwen3.8-max": "qwen3.8-max",
+        "qwen3.8-flash": "qwen3.8-flash"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "muse": {
+      "official_catalog": "../../muse.json",
+      "output": "muse/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "muse-spark-1.2-contributor": "muse-spark-1.2-contributor"
+      },
+      "notes": [
+        "Configure matching model_name aliases in the LiteLLM proxy model_list."
+      ]
+    },
+    "mimo": {
+      "official_catalog": "../../mimo.json",
+      "output": "mimo/model_catalog.json",
+      "transport": "litellm-responses-proxy",
+      "display_suffix": "(LiteLLM)",
+      "model_mappings": {
+        "mimo-v2.5-pro": "mimo-v2.5-pro"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."

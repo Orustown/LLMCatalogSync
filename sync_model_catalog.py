@@ -42,6 +42,9 @@ THIRD_PARTY_PRESETS = {
     "minimax": THIRD_PARTY_DIR / "minimax.json",
     "hunyuan": THIRD_PARTY_DIR / "hunyuan.json",
     "claude": THIRD_PARTY_DIR / "claude.json",
+    "qwen": THIRD_PARTY_DIR / "qwen.json",
+    "muse": THIRD_PARTY_DIR / "muse.json",
+    "mimo": THIRD_PARTY_DIR / "mimo.json",
 }
 ROUTE_MANIFESTS = {
     name: ROUTES_DIR / name / "route.json"

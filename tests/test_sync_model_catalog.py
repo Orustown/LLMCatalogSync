@@ -157,8 +157,10 @@ class CatalogTests(unittest.TestCase):
                 "claude-opus-5",
                 "claude-opus-4.8",
                 "claude-opus-4.6",
-                "claude-sonnet-4.6",
             ],
+            "qwen": ["qwen3.8-max", "qwen3.8-flash"],
+            "muse": ["muse-spark-1.2-contributor"],
+            "mimo": ["mimo-v2.5-pro"],
         }
         for preset, slugs in expected.items():
             with self.subTest(preset=preset):
@@ -221,7 +223,7 @@ class CatalogTests(unittest.TestCase):
 
     def test_route_catalogs_are_standard_and_current(self) -> None:
         route_catalogs = sync.build_route_catalogs()
-        self.assertEqual(len(route_catalogs), 24)
+        self.assertEqual(len(route_catalogs), 33)
         for path, catalog in route_catalogs.items():
             with self.subTest(path=path.relative_to(sync.PROJECT_DIR)):
                 self.assertEqual(set(catalog), {"models"})
@@ -260,8 +262,36 @@ class CatalogTests(unittest.TestCase):
                 "minimax",
                 "hunyuan",
                 "claude",
+                "qwen",
+                "muse",
+                "mimo",
             ],
         )
+
+    def test_sonnet_4_6_is_removed_from_claude_preset(self) -> None:
+        overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["claude"])
+        self.assertNotIn(
+            "claude-sonnet-4.6",
+            [model["slug"] for model in overrides["models"]],
+        )
+
+    def test_gpt_6_astra_override_is_visible_and_uses_official_codex_fields(self) -> None:
+        overrides = sync.load_overrides(sync.PROJECT_DIR / "model_overrides.json")
+        model = next(
+            model for model in overrides["models"] if model["slug"] == "gpt-6-astra"
+        )
+        self.assertEqual(model["display_name"], "GPT-6-Astra")
+        self.assertEqual(model["visibility"], "list")
+        self.assertEqual(model["priority"], 0)
+        self.assertEqual(model["context_window"], 272_000)
+        self.assertEqual(model["max_context_window"], 872_000)
+        self.assertEqual(model["default_reasoning_level"], "low")
+        self.assertEqual(
+            [level["effort"] for level in model["supported_reasoning_levels"]],
+            ["low", "medium", "high", "xhigh", "max", "ultra"],
+        )
+        self.assertTrue(model["supports_reasoning_summaries"])
+        self.assertTrue(model["supports_parallel_tool_calls"])
 
     def test_normalize_catalog_compatibility_fills_required_cli_flags(self) -> None:
         catalog = {
@@ -344,6 +374,7 @@ class CatalogTests(unittest.TestCase):
                             source_url,
                             "official pricing entries must not cite gateway pages",
                         )
+        self.assertIn("gpt-6-astra", metadata["models"])
         self.assertIn("gpt-5.6-sol", metadata["models"])
         self.assertIn("kimi-k3", metadata["models"])
         self.assertIn("grok-4.6", metadata["models"])
@@ -355,7 +386,11 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("claude-opus-5", metadata["models"])
         self.assertIn("claude-opus-4.8", metadata["models"])
         self.assertIn("claude-opus-4.6", metadata["models"])
-        self.assertIn("claude-sonnet-4.6", metadata["models"])
+        self.assertIn("qwen3.8-max", metadata["models"])
+        self.assertIn("qwen3.8-flash", metadata["models"])
+        self.assertIn("muse-spark-1.2-contributor", metadata["models"])
+        self.assertIn("mimo-v2.5-pro", metadata["models"])
+        self.assertNotIn("claude-sonnet-4.6", metadata["models"])
         self.assertNotIn("glm-5.2", metadata["models"])
         self.assertNotIn("gpt-5.2", metadata["models"])
         self.assertNotIn("kimi-k2.7-code", metadata["models"])

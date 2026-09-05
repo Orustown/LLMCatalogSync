@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "provider": "Xiaomi MiMo",
+    "classification": "official",
+    "catalog_kind": "vendor-baseline",
+    "codex_adapter": "repository-maintained",
+    "verified_on": "2026-09-04",
+    "upstream_api": "openai-compatible",
+    "codex_transport": "responses-gateway",
+    "sources": [
+      "https://mimo.xiaomi.com/mimo-v2-5-pro",
+      "https://platform.xiaomimimo.com/",
+      "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
+    ]
+  },
+  "models": [
+    {
+      "slug": "mimo-v2.5-pro",
+      "display_name": "MiMo V2.5 Pro",
+      "description": "Xiaomi flagship model for complex software engineering, agentic capabilities, and long-horizon tasks.",
+      "default_reasoning_level": "high",
+      "supported_reasoning_levels": [
+        {"effort": "low", "description": "Fast responses with lighter reasoning"},
+        {"effort": "medium", "description": "Balanced reasoning for everyday work"},
+        {"effort": "high", "description": "Deeper reasoning for complex tasks"}
+      ],
+      "shell_type": "shell_command",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 2000,
+      "availability_nux": null,
+      "upgrade": null,
+      "base_instructions": "You are Codex, a coding agent. Work carefully in the user's repository, make scoped changes, and verify the result.",
+      "supports_reasoning_summaries": true,
+      "default_reasoning_summary": "none",
+      "support_verbosity": false,
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text",
+      "truncation_policy": {"mode": "tokens", "limit": 10000},
+      "supports_parallel_tool_calls": true,
+      "supports_image_detail_original": false,
+      "context_window": 1000000,
+      "max_context_window": 1000000,
+      "effective_context_window_percent": 95,
+      "experimental_supported_tools": [],
+      "input_modalities": ["text"],
+      "supports_search_tool": false,
+      "use_responses_lite": false,
+      "additional_speed_tiers": [],
+      "service_tiers": []
+    }
+  ],
+  "remove_models": []
+}

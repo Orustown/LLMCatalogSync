@@ -59,6 +59,21 @@
       "url": "https://claude.com/pricing#api",
       "reliability": "official"
     },
+    "qwen_official": {
+      "label": "Alibaba Cloud Model Studio Qwen pricing",
+      "url": "https://www.alibabacloud.com/help/en/model-studio/qwen3-8-max",
+      "reliability": "official"
+    },
+    "meta_community": {
+      "label": "Meta Muse Spark listing via OpenRouter",
+      "url": "https://openrouter.ai/meta/muse-spark-1.2-contributor",
+      "reliability": "community-fallback"
+    },
+    "xiaomi_community": {
+      "label": "Xiaomi MiMo listing via OpenRouter",
+      "url": "https://openrouter.ai/xiaomi/mimo-v2.5-pro",
+      "reliability": "community-fallback"
+    },
     "modelsdev_community": {
       "label": "models.dev provider and model catalog",
       "url": "https://models.dev/api.json",
@@ -86,9 +101,20 @@
     "anthropic/claude-opus-5": "claude-opus-5",
     "anthropic/claude-opus-4.8": "claude-opus-4.8",
     "anthropic/claude-opus-4.6": "claude-opus-4.6",
-    "anthropic/claude-sonnet-4.6": "claude-sonnet-4.6"
+    "qwen/qwen3.8-max": "qwen3.8-max",
+    "qwen/qwen3.8-flash": "qwen3.8-flash",
+    "meta/muse-spark-1.2-contributor": "muse-spark-1.2-contributor",
+    "xiaomi/mimo-v2.5-pro": "mimo-v2.5-pro"
   },
   "models": {
+    "gpt-6-astra": {
+      "provider": "OpenAI",
+      "input_per_m": 10.0,
+      "output_per_m": 50.0,
+      "source": "openai_official",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+      "notes": "Standard short-context tier; prompts above 272K input tokens use higher rates. Cached input, Batch, Flex, and Fast tiers differ."
+    },
     "gpt-5.6-sol": {
       "provider": "OpenAI",
       "input_per_m": 5.0,
@@ -255,12 +281,37 @@
       "source": "anthropic_official",
       "source_url": "https://claude.com/pricing#api"
     },
-    "claude-sonnet-4.6": {
-      "provider": "Anthropic",
-      "input_per_m": 3.0,
-      "output_per_m": 15.0,
-      "source": "anthropic_official",
-      "source_url": "https://claude.com/pricing#api"
+    "qwen3.8-max": {
+      "provider": "Qwen",
+      "input_per_m": 2.0,
+      "output_per_m": 6.0,
+      "source": "qwen_official",
+      "source_url": "https://www.alibabacloud.com/help/en/model-studio/qwen3-8-max",
+      "notes": "Singapore / international standard API rates; regional pricing can differ."
+    },
+    "qwen3.8-flash": {
+      "provider": "Qwen",
+      "input_per_m": 0.15,
+      "output_per_m": 0.47,
+      "source": "qwen_official",
+      "source_url": "https://www.alibabacloud.com/help/en/model-studio/qwen3-8-flash",
+      "notes": "Singapore / international standard API rates; regional pricing can differ."
+    },
+    "muse-spark-1.2-contributor": {
+      "provider": "Meta",
+      "input_per_m": 0.1,
+      "output_per_m": 0.2,
+      "source": "meta_community",
+      "source_url": "https://openrouter.ai/meta/muse-spark-1.2-contributor",
+      "notes": "OpenRouter listing; contributor tier allows Meta to use inputs and outputs for training."
+    },
+    "mimo-v2.5-pro": {
+      "provider": "Xiaomi MiMo",
+      "input_per_m": 0.435,
+      "output_per_m": 0.87,
+      "source": "xiaomi_community",
+      "source_url": "https://openrouter.ai/xiaomi/mimo-v2.5-pro",
+      "notes": "Xiaomi provider list surfaced through OpenRouter; cache-read pricing is separate."
     }
   }
 }

@@ -90,8 +90,35 @@
       "model_mappings": {
         "claude-opus-5": "claude-opus-5",
         "claude-opus-4.8": "claude-opus-4.8",
-        "claude-opus-4.6": "claude-opus-4.6",
-        "claude-sonnet-4.6": "claude-sonnet-4.6"
+        "claude-opus-4.6": "claude-opus-4.6"
+      }
+    },
+    "qwen": {
+      "official_catalog": "../../qwen.json",
+      "output": "qwen/model_catalog.json",
+      "transport": "responses-to-chat-completions",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "qwen3.8-max": "qwen3.8-max",
+        "qwen3.8-flash": "qwen3.8-flash"
+      }
+    },
+    "muse": {
+      "official_catalog": "../../muse.json",
+      "output": "muse/model_catalog.json",
+      "transport": "responses-to-anthropic-messages",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "muse-spark-1.2-contributor": "muse-spark-1.2-contributor"
+      }
+    },
+    "mimo": {
+      "official_catalog": "../../mimo.json",
+      "output": "mimo/model_catalog.json",
+      "transport": "responses-to-openai-compatible",
+      "display_suffix": "(CC Switch)",
+      "model_mappings": {
+        "mimo-v2.5-pro": "mimo-v2.5-pro"
       }
     }
   }
