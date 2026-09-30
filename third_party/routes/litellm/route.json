@@ -2,7 +2,7 @@
   "schema_version": 1,
   "classification": "third-party",
   "route": "litellm",
-  "verified_on": "2026-09-04",
+  "verified_on": "2026-09-30",
   "wire_api": "responses",
   "base_url": "http://127.0.0.1:4000/v1",
   "sources": [
@@ -16,9 +16,8 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "grok-4.6": "grok-4.6",
-        "grok-4.5": "grok-4.5",
-        "grok-4.20-multi-agent-0309": "grok-4.20-multi-agent-0309",
+        "grok-4.7": "grok-4.7",
+        "grok-4.20-multi-agent": "grok-4.20-multi-agent",
         "grok-build-0.1": "grok-build-0.1"
       },
       "notes": [
@@ -32,7 +31,7 @@
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
         "deepseek-v4-pro": "deepseek-v4-pro",
-        "deepseek-v4-flash": "deepseek-v4-flash"
+        "deepseek-flash": "deepseek-flash"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -44,7 +43,8 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "kimi-k3": "kimi-k3"
+        "kimi-k3": "kimi-k3",
+        "kimi-k2.7-code": "kimi-k2.7-code"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -69,7 +69,7 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "gemini-3.7-flash": "gemini-3.7-flash"
+        "gemini-3.8-flash": "gemini-3.8-flash"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -81,7 +81,8 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "MiniMax-M3": "MiniMax-M3"
+        "MiniMax-M3": "MiniMax-M3",
+        "MiniMax-M3.1-Flash-Preview": "MiniMax-M3.1-Flash-Preview"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -105,9 +106,8 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "claude-opus-5": "claude-opus-5",
-        "claude-opus-4.8": "claude-opus-4.8",
-        "claude-opus-4.6": "claude-opus-4.6"
+        "claude-opus-5-5": "claude-opus-5-5",
+        "claude-fable-5-1": "claude-fable-5-1"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -132,7 +132,7 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "muse-spark-1.2-contributor": "muse-spark-1.2-contributor"
+        "muse-spark-1.3-contributor": "muse-spark-1.3-contributor"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -144,7 +144,7 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "mimo-v2.5-pro": "mimo-v2.5-pro"
+        "mimo-v2.6-pro": "mimo-v2.6-pro"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."

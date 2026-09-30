@@ -3,7 +3,7 @@
     {
       "slug": "deepseek-v4-pro",
       "display_name": "DeepSeek V4 Pro (LiteLLM)",
-      "description": "DeepSeek · 1M context · $0.435/M input · $0.87/M output · Text",
+      "description": "DeepSeek · 1M context · $0.66/M input · $1.98/M output · Text",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -50,9 +50,9 @@
       "service_tiers": []
     },
     {
-      "slug": "deepseek-v4-flash",
-      "display_name": "DeepSeek V4 Flash (LiteLLM)",
-      "description": "DeepSeek · 1M context · $0.14/M input  · $0.28/M output · Text",
+      "slug": "deepseek-flash",
+      "display_name": "DeepSeek Flash (LiteLLM)",
+      "description": "DeepSeek · 1M context · $0.15/M input · $0.6/M output  · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -85,13 +85,14 @@
         "limit": 10000
       },
       "supports_parallel_tool_calls": true,
-      "supports_image_detail_original": false,
+      "supports_image_detail_original": true,
       "context_window": 1048576,
       "max_context_window": 1048576,
       "effective_context_window_percent": 95,
       "experimental_supported_tools": [],
       "input_modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "supports_search_tool": true,
       "use_responses_lite": false,

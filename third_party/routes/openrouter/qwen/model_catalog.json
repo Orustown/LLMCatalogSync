@@ -1,9 +1,9 @@
 {
   "models": [
     {
-      "slug": "qwen/qwen3.8-max",
+      "slug": "qwen/qwen3.8-max-prime",
       "display_name": "Qwen3.8 Max (OpenRouter)",
-      "description": "Qwen · 1M context · $2/M input    · $6/M output    · Vision",
+      "description": "Qwen flagship multimodal model for long-horizon coding, agentic work, and professional tasks.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {

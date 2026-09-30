@@ -1,8 +1,8 @@
 {
   "models": [
     {
-      "slug": "gemini-3.7-flash",
-      "display_name": "Gemini 3.7 Flash (LiteLLM)",
+      "slug": "gemini-3.8-flash",
+      "display_name": "Gemini 3.8 Flash (LiteLLM)",
       "description": "Google · 1M context · $0.75/M input · $3.75/M output · Vision",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [

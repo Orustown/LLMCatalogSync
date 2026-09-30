@@ -4,7 +4,7 @@
     "classification": "official",
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
-    "verified_on": "2026-09-04",
+    "verified_on": "2026-09-30",
     "upstream_api": "chat-completions",
     "codex_transport": "responses-gateway",
     "sources": [

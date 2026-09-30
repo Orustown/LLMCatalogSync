@@ -4,9 +4,9 @@
     "classification": "official",
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
-    "verified_on": "2026-08-06",
+    "verified_on": "2026-09-30",
     "upstream_api": "responses-and-chat-completions",
-    "codex_transport": "native-flash-gateway-pro",
+    "codex_transport": "direct",
     "sources": [
       "https://api-docs.deepseek.com/quick_start/pricing",
       "https://api-docs.deepseek.com/quick_start/agent_integrations/codex/",
@@ -65,9 +65,9 @@
       "service_tiers": []
     },
     {
-      "slug": "deepseek-v4-flash",
-      "display_name": "DeepSeek V4 Flash",
-      "description": "DeepSeek V4 low-latency model with a 1M context window.",
+      "slug": "deepseek-flash",
+      "display_name": "DeepSeek Flash",
+      "description": "DeepSeek V4.1 Flash frontier agentic coding model with image input and a 1M context window.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -100,13 +100,14 @@
         "limit": 10000
       },
       "supports_parallel_tool_calls": true,
-      "supports_image_detail_original": false,
+      "supports_image_detail_original": true,
       "context_window": 1048576,
       "max_context_window": 1048576,
       "effective_context_window_percent": 95,
       "experimental_supported_tools": [],
       "input_modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "supports_search_tool": true,
       "use_responses_lite": false,

@@ -141,51 +141,58 @@ class CatalogTests(unittest.TestCase):
 
     def test_third_party_presets_are_valid_additions(self) -> None:
         expected = {
+            "claude": [
+                "claude-opus-5-5",
+                "claude-fable-5-1",
+            ],
             "grok": [
-                "grok-4.6",
-                "grok-4.5",
-                "grok-4.20-multi-agent-0309",
+                "grok-4.7",
+                "grok-4.20-multi-agent",
                 "grok-build-0.1",
             ],
-            "deepseek": ["deepseek-v4-pro", "deepseek-v4-flash"],
-            "kimi": ["kimi-k3"],
-            "glm": ["glm-5.3", "glm-5.3-flash"],
-            "gemini": ["gemini-3.7-flash"],
-            "minimax": ["MiniMax-M3"],
-            "hunyuan": ["hy4-preview"],
-            "claude": [
-                "claude-opus-5",
-                "claude-opus-4.8",
-                "claude-opus-4.6",
-            ],
+            "gemini": ["gemini-3.8-flash"],
+            "muse": ["muse-spark-1.3-contributor"],
             "qwen": ["qwen3.8-max", "qwen3.8-flash"],
-            "muse": ["muse-spark-1.2-contributor"],
-            "mimo": ["mimo-v2.5-pro"],
+            "hunyuan": ["hy4-preview"],
+            "deepseek": ["deepseek-v4-pro", "deepseek-flash"],
+            "glm": ["glm-5.3", "glm-5.3-flash"],
+            "kimi": ["kimi-k3", "kimi-k2.7-code"],
+            "minimax": ["MiniMax-M3", "MiniMax-M3.1-Flash-Preview"],
+            "mimo": ["mimo-v2.6-pro"],
         }
         for preset, slugs in expected.items():
             with self.subTest(preset=preset):
                 overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS[preset])
+                base_catalog = {
+                    "models": [
+                        {"slug": "base"},
+                        *(
+                            {"slug": removed_slug}
+                            for removed_slug in overrides["remove_models"]
+                        ),
+                    ]
+                }
                 merged, changes = sync.merge_overrides(
-                    {"models": [{"slug": "base"}]}, overrides
+                    base_catalog, overrides
                 )
-                self.assertEqual(changes["added"], slugs)
                 self.assertEqual(
                     [model["slug"] for model in merged["models"]], ["base", *slugs]
                 )
+                self.assertEqual(changes["removed"], overrides["remove_models"])
 
     def test_grok_multi_agent_defaults_to_xhigh(self) -> None:
         overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["grok"])
         model = next(
             model
             for model in overrides["models"]
-            if model["slug"] == "grok-4.20-multi-agent-0309"
+            if model["slug"] == "grok-4.20-multi-agent"
         )
         self.assertEqual(model["default_reasoning_level"], "xhigh")
         self.assertEqual(
             [level["effort"] for level in model["supported_reasoning_levels"]],
             ["low", "medium", "high", "xhigh"],
         )
-        self.assertEqual(model["context_window"], 1_000_000)
+        self.assertEqual(model["context_window"], 2_000_000)
 
     def test_vendor_presets_are_marked_as_official_baselines(self) -> None:
         for provider, path in sync.THIRD_PARTY_PRESETS.items():
@@ -196,10 +203,10 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual(metadata["catalog_kind"], "vendor-baseline")
                 self.assertEqual(metadata["codex_adapter"], "repository-maintained")
 
-    def test_grok_4_6_supports_xhigh_reasoning(self) -> None:
+    def test_grok_4_7_supports_xhigh_reasoning(self) -> None:
         overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["grok"])
         model = next(
-            model for model in overrides["models"] if model["slug"] == "grok-4.6"
+            model for model in overrides["models"] if model["slug"] == "grok-4.7"
         )
         self.assertEqual(model["default_reasoning_level"], "high")
         self.assertEqual(
@@ -235,9 +242,8 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(
             [model["slug"] for model in route_catalogs[openrouter_grok.resolve()]["models"]],
             [
-                "x-ai/grok-4.6",
-                "x-ai/grok-4.5",
-                "x-ai/grok-4.20-multi-agent-0309",
+                "x-ai/grok-4.7",
+                "x-ai/grok-4.20-multi-agent",
                 "x-ai/grok-build-0.1",
             ],
         )
@@ -254,18 +260,49 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(
             sync.selected_preset_names(["kimi", "all", "grok"]),
             [
-                "grok",
-                "deepseek",
-                "kimi",
-                "glm",
-                "gemini",
-                "minimax",
-                "hunyuan",
                 "claude",
-                "qwen",
+                "grok",
+                "gemini",
                 "muse",
+                "qwen",
+                "hunyuan",
+                "deepseek",
+                "glm",
+                "kimi",
+                "minimax",
                 "mimo",
             ],
+        )
+
+    def test_generated_catalog_uses_requested_vendor_order(self) -> None:
+        catalog = json.loads(
+            (sync.PROJECT_DIR / "model_catalog.json").read_text(
+                encoding="utf-8-sig"
+            )
+        )
+        vendor_prefixes = [
+            ("OpenAI", ("gpt-",)),
+            ("Claude", ("claude-",)),
+            ("Grok", ("grok-",)),
+            ("Gemini", ("gemini-",)),
+            ("Meta", ("muse-",)),
+            ("Qwen", ("qwen",)),
+            ("Hunyuan", ("hy4",)),
+            ("DeepSeek", ("deepseek-",)),
+            ("GLM", ("glm-",)),
+            ("Kimi", ("kimi-",)),
+            ("MiniMax", ("MiniMax-",)),
+            ("Xiaomi", ("mimo-",)),
+        ]
+        observed_vendors = [
+            vendor_name
+            for model in catalog["models"]
+            for vendor_name, prefixes in vendor_prefixes
+            if model["slug"].startswith(prefixes)
+        ]
+        self.assertEqual(
+            observed_vendors,
+            sorted(observed_vendors, key=[name for name, _ in vendor_prefixes].index),
         )
 
     def test_sonnet_4_6_is_removed_from_claude_preset(self) -> None:
@@ -313,6 +350,22 @@ class CatalogTests(unittest.TestCase):
         again, fixed_again = sync.normalize_catalog_compatibility(normalized)
         self.assertEqual(fixed_again, [])
         self.assertEqual(again, normalized)
+
+    def test_normalize_catalog_compatibility_removes_unsupported_modalities(self) -> None:
+        catalog = {
+            "models": [
+                {
+                    "slug": "multimodal",
+                    "input_modalities": ["text", "image", "video", "audio"],
+                }
+            ]
+        }
+        normalized, fixed = sync.normalize_catalog_compatibility(catalog)
+        self.assertEqual(fixed, ["multimodal"])
+        self.assertEqual(
+            normalized["models"][0]["input_modalities"],
+            ["text", "image", "audio"],
+        )
 
     def test_app_archive_needs_compatibility_fill_for_cli(self) -> None:
         app_catalog = json.loads(
@@ -375,21 +428,25 @@ class CatalogTests(unittest.TestCase):
                             "official pricing entries must not cite gateway pages",
                         )
         self.assertIn("gpt-6-astra", metadata["models"])
-        self.assertIn("gpt-5.6-sol", metadata["models"])
+        self.assertIn("gpt-6.1-sol", metadata["models"])
+        self.assertIn("gpt-6-luna", metadata["models"])
+        self.assertIn("gpt-5.6-terra", metadata["models"])
         self.assertIn("kimi-k3", metadata["models"])
-        self.assertIn("grok-4.6", metadata["models"])
+        self.assertIn("grok-4.7", metadata["models"])
         self.assertIn("glm-5.3", metadata["models"])
         self.assertIn("glm-5.3-flash", metadata["models"])
-        self.assertIn("gemini-3.7-flash", metadata["models"])
+        self.assertIn("gemini-3.8-flash", metadata["models"])
         self.assertIn("MiniMax-M3", metadata["models"])
+        self.assertNotIn("MiniMax-M3.1-Flash-Preview", metadata["models"])
         self.assertIn("hy4-preview", metadata["models"])
-        self.assertIn("claude-opus-5", metadata["models"])
-        self.assertIn("claude-opus-4.8", metadata["models"])
-        self.assertIn("claude-opus-4.6", metadata["models"])
+        self.assertIn("claude-opus-5-5", metadata["models"])
+        self.assertIn("claude-fable-5-1", metadata["models"])
         self.assertIn("qwen3.8-max", metadata["models"])
         self.assertIn("qwen3.8-flash", metadata["models"])
-        self.assertIn("muse-spark-1.2-contributor", metadata["models"])
-        self.assertIn("mimo-v2.5-pro", metadata["models"])
+        self.assertIn("muse-spark-1.3-contributor", metadata["models"])
+        self.assertIn("mimo-v2.6-pro", metadata["models"])
+        self.assertIn("grok-build-0.1", metadata["models"])
+        self.assertIn("grok-4.20-multi-agent", metadata["models"])
         self.assertNotIn("claude-sonnet-4.6", metadata["models"])
         self.assertNotIn("glm-5.2", metadata["models"])
         self.assertNotIn("gpt-5.2", metadata["models"])
@@ -455,7 +512,7 @@ class CatalogTests(unittest.TestCase):
         catalog = {
             "models": [
                 {
-                    "slug": "gpt-5.6-sol",
+                    "slug": "gpt-6.1-sol",
                     "description": "Latest frontier agentic coding model.",
                     "context_window": 272000,
                     "input_modalities": ["text", "image"],
@@ -479,7 +536,7 @@ class CatalogTests(unittest.TestCase):
         kimi_description = enriched["models"][1]["description"]
         self.assertEqual(
             " ".join(sol_description.split()),
-            "OpenAI · 272K context · $5/M input · $30/M output · Vision",
+            "OpenAI · 272K context · $2/M input · $10/M output · Vision",
         )
         self.assertEqual(
             " ".join(kimi_description.split()),
@@ -491,24 +548,24 @@ class CatalogTests(unittest.TestCase):
             kimi_description.index(" · "),
         )
         self.assertEqual(enriched["models"][2]["description"], "keep me")
-        self.assertEqual(changes["updated"], ["gpt-5.6-sol", "moonshotai/kimi-k3"])
+        self.assertEqual(changes["updated"], ["gpt-6.1-sol", "moonshotai/kimi-k3"])
         self.assertEqual(changes["skipped"], ["unknown-model"])
 
     def test_enrich_is_idempotent(self) -> None:
         catalog = {
             "models": [
                 {
-                    "slug": "deepseek-v4-flash",
+                    "slug": "deepseek-flash",
                     "description": "placeholder",
                     "context_window": 1048576,
-                    "input_modalities": ["text"],
+                    "input_modalities": ["text", "image"],
                 }
             ]
         }
         first, first_changes = sync.enrich_catalog_descriptions(catalog)
         second, second_changes = sync.enrich_catalog_descriptions(first)
         self.assertEqual(first, second)
-        self.assertEqual(first_changes["updated"], ["deepseek-v4-flash"])
+        self.assertEqual(first_changes["updated"], ["deepseek-flash"])
         self.assertEqual(second_changes["updated"], [])
 
     def test_combine_overrides_deep_merges_duplicate_models(self) -> None:

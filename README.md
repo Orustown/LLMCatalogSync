@@ -35,7 +35,7 @@ Moonshot AI · 1M context   · $3/M     input · $15/M output · Vision
 python .\sync_model_catalog.py --offline                 # 只读本机 bundled
 python .\sync_model_catalog.py --base cli-bundled       # 使用 PATH CLI
 python .\sync_model_catalog.py --base github-main       # 使用上游 main
-python .\sync_model_catalog.py --preset all --strict --check  # 发布前检查当前全量目录
+python .\sync_model_catalog.py --base github-main --preset all --strict --check  # 发布前检查当前全量目录
 python .\sync_model_catalog.py --no-pricing-enrichment  # 保留上游原始 description
 ```
 
@@ -44,20 +44,24 @@ python .\sync_model_catalog.py --no-pricing-enrichment  # 保留上游原始 des
 
 Codex 启动时加载 `model_catalog_json` 指向的一份目录。直接使用项目根目录的 [`model_catalog.json`](model_catalog.json) 即可。
 
-只使用 OpenAI 模型时无需额外生成。要把第三方模型一起合并到根目录，执行对应预设：
+只使用 OpenAI 模型时无需额外生成。根目录模型按以下固定厂商顺序排列：
+
+**OpenAI、Claude、Grok、Gemini、Meta、Qwen、Hunyuan、DeepSeek、GLM、Kimi、MiniMax、Xiaomi**。
+
+要把第三方模型一起合并到根目录，执行对应预设：
 
 ```powershell
-python .\sync_model_catalog.py --preset grok       # 加入 Grok，包含 grok-4.6
-python .\sync_model_catalog.py --preset deepseek   # 加入 DeepSeek
-python .\sync_model_catalog.py --preset kimi       # 加入 Kimi K3
-python .\sync_model_catalog.py --preset glm        # 加入 GLM-5.3、GLM-5.3 Flash
-python .\sync_model_catalog.py --preset gemini     # 加入 Gemini 3.7 Flash
-python .\sync_model_catalog.py --preset minimax    # 加入 MiniMax M3
-python .\sync_model_catalog.py --preset hunyuan    # 加入 Hy4 Preview
-python .\sync_model_catalog.py --preset claude     # 加入 Claude Opus 5、Opus 4.8、Opus 4.6
+python .\sync_model_catalog.py --preset claude     # 加入 Claude Opus 5.5、Fable 5.1
+python .\sync_model_catalog.py --preset grok       # 加入 Grok 4.7、4.20 Multi-Agent、Build
+python .\sync_model_catalog.py --preset gemini     # 加入 Gemini 3.8 Flash
+python .\sync_model_catalog.py --preset muse       # 加入 Meta Muse Spark 1.3 Contributor
 python .\sync_model_catalog.py --preset qwen       # 加入 Qwen3.8 Max、Qwen3.8 Flash
-python .\sync_model_catalog.py --preset muse       # 加入 Muse Spark 1.2 Contributor
-python .\sync_model_catalog.py --preset mimo       # 加入 MiMo V2.5 Pro
+python .\sync_model_catalog.py --preset hunyuan    # 加入 Hy4 Preview
+python .\sync_model_catalog.py --preset deepseek   # 加入 DeepSeek
+python .\sync_model_catalog.py --preset glm        # 加入 GLM-5.3、GLM-5.3 Flash
+python .\sync_model_catalog.py --preset kimi       # 加入 Kimi K3、K2.7 Code
+python .\sync_model_catalog.py --preset minimax    # 加入 MiniMax M3、M3.1 Flash Preview
+python .\sync_model_catalog.py --preset mimo       # 加入 Xiaomi MiMo V2.6 Pro
 python .\sync_model_catalog.py --preset all        # 加入全部第三方模型
 ```
 
@@ -84,7 +88,7 @@ model_catalog_json = "C:/Users/<username>/.codex/model-catalogs/model_catalog.js
 codex debug models
 ```
 
-`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude,qwen,muse,mimo}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。长期要从官方 OpenAI 目录里拿掉的模型写在 [`model_overrides.json`](model_overrides.json) 的 `remove_models`，当前会移除 `gpt-5.2`。
+`third_party/{grok,deepseek,kimi,glm,gemini,minimax,hunyuan,claude,qwen,muse,mimo}.json` 是同步器使用的厂商基线，不要直接复制给 Codex。合并 catalog 只增加模型条目，不修改现有 API 连接设置。长期要从官方 OpenAI 目录里拿掉的模型写在 [`model_overrides.json`](model_overrides.json) 的 `remove_models`；当前按模型系列只保留最新的 Sol、Luna、Terra，并移除 Daybreak 和 Codex Auto Review。
 
 当前根目录还会通过 [`model_overrides.json`](model_overrides.json) 显示 GPT-6 Astra（`gpt-6-astra`）。该模型来自 OpenAI API 文档和 Codex 上游目录，支持 Responses、图片输入、工具调用以及 `low` 到 `ultra` 的 Codex 推理级别。
 
@@ -97,22 +101,22 @@ codex debug models
 
 | 预设 | 当前模型 | 接口要求 | 一键生成 |
 | --- | --- | --- | --- |
-| [Grok](third_party/grok.json) | `grok-4.6`、`grok-4.5`、`grok-4.20-multi-agent-0309`、`grok-build-0.1` | xAI 支持 Responses，可直连；Grok 4.6 支持 `xhigh`；Multi Agent 的 `xhigh` 使用 16 个协作代理 | `python .\sync_model_catalog.py --preset grok` |
-| [DeepSeek](third_party/deepseek.json) | `deepseek-v4-pro`、`deepseek-v4-flash` | V4 Flash 原生 Responses；V4 Pro 需协议网关 | `python .\sync_model_catalog.py --preset deepseek` |
-| [Kimi](third_party/kimi.json) | `kimi-k3` | 官方 Codex 指南使用协议网关 | `python .\sync_model_catalog.py --preset kimi` |
-| [GLM](third_party/glm.json) | `glm-5.3`、`glm-5.3-flash` | Z.ai 支持 Responses；始终启用思考，编码任务推荐 `max` | `python .\sync_model_catalog.py --preset glm` |
-| [Gemini](third_party/gemini.json) | `gemini-3.7-flash` | 官方 Chat Completions / Vertex，Codex 需协议网关 | `python .\sync_model_catalog.py --preset gemini` |
-| [MiniMax](third_party/minimax.json) | `MiniMax-M3` | 官方推荐 Anthropic Messages 或 Chat Completions，需协议网关 | `python .\sync_model_catalog.py --preset minimax` |
-| [Hunyuan](third_party/hunyuan.json) | `hy4-preview` | 腾讯云 TokenHub Chat Completions，需协议网关；仍为 Preview | `python .\sync_model_catalog.py --preset hunyuan` |
-| [Claude](third_party/claude.json) | `claude-opus-5`、`claude-opus-4.8`、`claude-opus-4.6` | Anthropic Messages，需协议网关或 OpenRouter | `python .\sync_model_catalog.py --preset claude` |
+| [Claude](third_party/claude.json) | `claude-opus-5-5`、`claude-fable-5-1` | Anthropic Messages，需协议网关或 OpenRouter | `python .\sync_model_catalog.py --preset claude` |
+| [Grok](third_party/grok.json) | `grok-4.7`、`grok-4.20-multi-agent`、`grok-build-0.1` | xAI 支持 Responses，可直连；Multi-Agent 和 Build 是独立用途例外 | `python .\sync_model_catalog.py --preset grok` |
+| [Gemini](third_party/gemini.json) | `gemini-3.8-flash` | Google 当前主推 Flash；官方文档显示 1M 上下文，Codex 需协议网关 | `python .\sync_model_catalog.py --preset gemini` |
+| [Meta / Muse](third_party/muse.json) | `muse-spark-1.3-contributor` | Meta API / Anthropic Messages，需协议网关；Contributor 允许 Meta 使用输入输出改进产品 | `python .\sync_model_catalog.py --preset muse` |
 | [Qwen](third_party/qwen.json) | `qwen3.8-max`、`qwen3.8-flash` | Alibaba Cloud Model Studio，支持 OpenAI / Anthropic 兼容协议 | `python .\sync_model_catalog.py --preset qwen` |
-| [Muse](third_party/muse.json) | `muse-spark-1.2-contributor` | Meta API / Anthropic Messages，需协议网关 | `python .\sync_model_catalog.py --preset muse` |
-| [MiMo](third_party/mimo.json) | `mimo-v2.5-pro` | Xiaomi API / OpenAI 兼容协议，需协议网关 | `python .\sync_model_catalog.py --preset mimo` |
+| [Hunyuan](third_party/hunyuan.json) | `hy4-preview` | 腾讯云 TokenHub Chat Completions，需协议网关；仍为 Preview | `python .\sync_model_catalog.py --preset hunyuan` |
+| [DeepSeek](third_party/deepseek.json) | `deepseek-v4-pro`、`deepseek-flash` | 官方均支持 Responses / Anthropic API；具体转换能力取决于路由 | `python .\sync_model_catalog.py --preset deepseek` |
+| [GLM](third_party/glm.json) | `glm-5.3`、`glm-5.3-flash` | Z.ai 支持 Responses；始终启用思考，编码任务推荐 `max` | `python .\sync_model_catalog.py --preset glm` |
+| [Kimi](third_party/kimi.json) | `kimi-k3`、`kimi-k2.7-code` | 官方 API 支持 OpenAI / Anthropic 兼容协议，Codex 需协议网关 | `python .\sync_model_catalog.py --preset kimi` |
+| [MiniMax](third_party/minimax.json) | `MiniMax-M3.1-Flash-Preview`、`MiniMax-M3` | 官方推荐 Anthropic Messages 或 Chat Completions；Preview 目前仅 Token Plan / MiniMax Code | `python .\sync_model_catalog.py --preset minimax` |
+| [Xiaomi / MiMo](third_party/mimo.json) | `mimo-v2.6-pro` | Xiaomi API / OpenAI 兼容协议，需协议网关 | `python .\sync_model_catalog.py --preset mimo` |
 | 全部 | 上述全部 | 按各厂商要求配置 | `python .\sync_model_catalog.py --preset all` |
 
 `sync.cmd --preset all` 同样可用。`--preset` 可以重复，例如 `--preset grok --preset kimi`。`--no-overrides` 只跳过 [`model_overrides.json`](model_overrides.json)，不会跳过显式选择的预设。
 
-模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[xAI 模型](https://docs.x.ai/developers/models)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)、[Z.ai 模型与价格](https://docs.z.ai/guides/overview/pricing)、[Gemini 3.7 Flash](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-7-flash)、[MiniMax 文本模型](https://platform.minimaxi.com/docs/guides/text-generation)、[Hy4 Preview API](https://www.tencentcloud.com/techpedia/147981)、[Claude 模型概览](https://platform.claude.com/docs/en/models/overview)。当前 DeepSeek V4 Flash、GLM 和 Qwen3.8 Flash 可使用相应原生兼容接口；V4 Pro、Kimi、Gemini、MiniMax、Hy4、Claude、Muse、MiMo 以及其他 Chat Completions / Messages 端点仍应通过支持协议转换的网关使用。
+模型参数依据厂商当前文档维护；每份 JSON 的 `metadata.verified_on`、协议和来源也会随模型一起校验：[Claude 模型概览](https://platform.claude.com/docs/en/models/overview)、[xAI 模型](https://docs.x.ai/developers/models)、[Gemini 3.8 Flash](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-8-flash)、[Meta Muse](https://openrouter.ai/meta/muse-spark-1.3-contributor)、[Qwen](https://www.alibabacloud.com/help/en/model-studio/qwen3-8-max)、[DeepSeek 定价与模型](https://api-docs.deepseek.com/quick_start/pricing)、[Kimi 模型列表](https://platform.kimi.ai/docs/models)、[Z.ai 模型与价格](https://docs.z.ai/guides/overview/pricing)、[MiniMax 文本模型](https://platform.minimaxi.com/docs/guides/text-generation)、[Hy4 Preview API](https://www.tencentcloud.com/techpedia/147981)、[MiMo](https://mimo.xiaomi.com/)。当前 DeepSeek 两个模型、GLM 和 Qwen3.8 Flash 可使用相应原生兼容接口；Kimi、Gemini、MiniMax、Hy4、Claude、Muse、MiMo 以及其他 Chat Completions / Messages 端点仍应通过支持协议转换的网关使用。
 
 <a id="routes"></a>
 ## 第三方路由
@@ -123,7 +127,7 @@ codex debug models
 | --- | --- | --- |
 | [CC Switch](third_party/routes/cc-switch/route.json) | `cc-switch/<vendor>/model_catalog.json` | 保留厂商 slug；按当前 Provider 决定原生 Responses 或本地转换 |
 | [LiteLLM](third_party/routes/litellm/route.json) | `litellm/<vendor>/model_catalog.json` | 保留厂商 slug；LiteLLM `model_list` 必须配置同名 `model_name` alias |
-| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用 `x-ai/...`、`deepseek/...`、`moonshotai/...`、`z-ai/...`、`google/...`、`minimax/...`、`tencent/...`、`anthropic/...`、`qwen/...`、`meta/...`、`xiaomi/...` 命名空间 slug |
+| [OpenRouter](third_party/routes/openrouter/route.json) | `openrouter/<vendor>/model_catalog.json` | 使用经 `/api/v1/models` 核验的渠道 slug；MiniMax Preview 未列入 OpenRouter 路由 |
 
 普通同步会从官方厂商基线重建全部 33 份 route catalogs；`--strict --check` 也会检查它们是否过期。`--no-routes` 可只处理主目录。路由目录是生成文件，修改模型能力应回到官方厂商基线，修改 slug 或路由限制应修改对应 `route.json`。
 
@@ -196,7 +200,9 @@ Codex 官方 `model_catalog` **没有**结构化的 provider / price 字段。`/
 - 档位：标准短上下文、未命中缓存（cache-miss）API 价
 - 上下文：来自 catalog 的 `context_window`
 - Vision/Text：来自 catalog 的 `input_modalities`
+- Codex 当前只接受 `text`、`image`、`audio` 三种输入模态；厂商支持但 Codex schema 尚不接受的 `video` 会在生成目录中自动过滤，避免客户端启动失败
 - OpenRouter / LiteLLM / CC Switch 路由目录会显示同样的官方基线价，并在 `display_name` 上保留路由后缀
+- 没有可靠官方价格的模型（例如 Kimi K2.7 Code、MiniMax M3.1 Flash Preview）不编造价格；MiniMax Preview 的官方文档还限制为 Token Plan / MiniMax Code
 
 价格会变。更新时请改 `pricing_metadata.json` 的 `models`、`verified_on` 和 `source_url`，然后重新 `python .\sync_model_catalog.py --preset all`。
 
@@ -205,7 +211,7 @@ Codex 官方 `model_catalog` **没有**结构化的 provider / price 字段。`/
 
 ```powershell
 python -B -m unittest discover -s tests -v
-python -B .\sync_model_catalog.py --preset all --strict --check
+python -B .\sync_model_catalog.py --base github-main --preset all --strict --check
 ```
 
 GitHub Actions 会运行单元测试并校验 JSON、官方分类、route manifests 和所有生成目录。项目只保留同步脚本、测试、当前目录、版本归档和第三方预设；不要提交 `auth.json`、`models_cache.json` 或用户级 `config.toml`。

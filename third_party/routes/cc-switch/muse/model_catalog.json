@@ -1,11 +1,15 @@
 {
   "models": [
     {
-      "slug": "muse-spark-1.2-contributor",
-      "display_name": "Muse Spark 1.2 Contributor (CC Switch)",
+      "slug": "muse-spark-1.3-contributor",
+      "display_name": "Muse Spark 1.3 Contributor (CC Switch)",
       "description": "Meta · 1M context · $0.1/M input · $0.2/M output · Vision",
-      "default_reasoning_level": "high",
+      "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
+        {
+          "effort": "minimal",
+          "description": "Minimal reasoning for the fastest responses"
+        },
         {
           "effort": "low",
           "description": "Fast responses with lighter reasoning"
@@ -17,6 +21,14 @@
         {
           "effort": "high",
           "description": "Deeper reasoning for complex tasks"
+        },
+        {
+          "effort": "xhigh",
+          "description": "Extended reasoning for long-horizon tasks"
+        },
+        {
+          "effort": "max",
+          "description": "Maximum reasoning depth"
         }
       ],
       "shell_type": "shell_command",

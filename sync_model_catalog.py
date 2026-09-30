@@ -34,18 +34,19 @@ SOURCE_NAMES = (
     "github-main",
 )
 THIRD_PARTY_PRESETS = {
-    "grok": THIRD_PARTY_DIR / "grok.json",
-    "deepseek": THIRD_PARTY_DIR / "deepseek.json",
-    "kimi": THIRD_PARTY_DIR / "kimi.json",
-    "glm": THIRD_PARTY_DIR / "glm.json",
-    "gemini": THIRD_PARTY_DIR / "gemini.json",
-    "minimax": THIRD_PARTY_DIR / "minimax.json",
-    "hunyuan": THIRD_PARTY_DIR / "hunyuan.json",
     "claude": THIRD_PARTY_DIR / "claude.json",
-    "qwen": THIRD_PARTY_DIR / "qwen.json",
+    "grok": THIRD_PARTY_DIR / "grok.json",
+    "gemini": THIRD_PARTY_DIR / "gemini.json",
     "muse": THIRD_PARTY_DIR / "muse.json",
+    "qwen": THIRD_PARTY_DIR / "qwen.json",
+    "hunyuan": THIRD_PARTY_DIR / "hunyuan.json",
+    "deepseek": THIRD_PARTY_DIR / "deepseek.json",
+    "glm": THIRD_PARTY_DIR / "glm.json",
+    "kimi": THIRD_PARTY_DIR / "kimi.json",
+    "minimax": THIRD_PARTY_DIR / "minimax.json",
     "mimo": THIRD_PARTY_DIR / "mimo.json",
 }
+CODEX_SUPPORTED_INPUT_MODALITIES = frozenset({"text", "image", "audio"})
 ROUTE_MANIFESTS = {
     name: ROUTES_DIR / name / "route.json"
     for name in ("cc-switch", "litellm", "openrouter")
@@ -816,6 +817,16 @@ def normalize_catalog_compatibility(
     fixed_slugs: list[str] = []
     for model in normalized["models"]:
         model_was_fixed = False
+        input_modalities = model.get("input_modalities")
+        if isinstance(input_modalities, list):
+            supported_modalities = [
+                modality
+                for modality in input_modalities
+                if modality in CODEX_SUPPORTED_INPUT_MODALITIES
+            ]
+            if supported_modalities != input_modalities:
+                model["input_modalities"] = supported_modalities or ["text"]
+                model_was_fixed = True
         if "supports_reasoning_summaries" not in model:
             # CLI OpenAI models use true; third-party presets set this
             # explicitly. Missing values almost always come from App/upstream

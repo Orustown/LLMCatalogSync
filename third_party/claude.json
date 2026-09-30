@@ -4,23 +4,23 @@
     "classification": "official",
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
-    "verified_on": "2026-09-04",
+    "verified_on": "2026-09-30",
     "upstream_api": "messages",
     "codex_transport": "responses-gateway",
     "sources": [
       "https://platform.claude.com/docs/en/models/overview",
-      "https://www.anthropic.com/claude/sonnet",
-      "https://openrouter.ai/anthropic/claude-opus-5",
-      "https://openrouter.ai/anthropic/claude-opus-4.8",
-      "https://openrouter.ai/anthropic/claude-opus-4.6"
+      "https://www.anthropic.com/claude/opus",
+      "https://platform.claude.com/docs/en/build-with-claude/effort",
+      "https://openrouter.ai/anthropic/claude-opus-5.5",
+      "https://openrouter.ai/anthropic/claude-fable-5.1"
     ]
   },
   "models": [
     {
-      "slug": "claude-opus-5",
-      "display_name": "Claude Opus 5",
-      "description": "Anthropic flagship model for demanding reasoning, coding, and long-horizon agentic work.",
-      "default_reasoning_level": "high",
+      "slug": "claude-opus-5-5",
+      "display_name": "Claude Opus 5.5",
+      "description": "Anthropic flagship model for long-running agentic coding and knowledge work with a 1M context window.",
+      "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         {
           "effort": "low",
@@ -33,6 +33,14 @@
         {
           "effort": "high",
           "description": "Deeper reasoning for complex tasks"
+        },
+        {
+          "effort": "xhigh",
+          "description": "Extended reasoning for long-horizon agentic tasks"
+        },
+        {
+          "effort": "max",
+          "description": "Maximum capability without constraints on token spending"
         }
       ],
       "shell_type": "shell_command",
@@ -67,9 +75,9 @@
       "service_tiers": []
     },
     {
-      "slug": "claude-opus-4.8",
-      "display_name": "Claude Opus 4.8",
-      "description": "Anthropic Opus model for autonomous agents and long-horizon coding work.",
+      "slug": "claude-fable-5-1",
+      "display_name": "Claude Fable 5.1",
+      "description": "Anthropic model for demanding reasoning and long-horizon agentic work with a 1M context window.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -83,6 +91,14 @@
         {
           "effort": "high",
           "description": "Deeper reasoning for complex tasks"
+        },
+        {
+          "effort": "xhigh",
+          "description": "Extended reasoning for long-horizon agentic tasks"
+        },
+        {
+          "effort": "max",
+          "description": "Maximum capability without constraints on token spending"
         }
       ],
       "shell_type": "shell_command",
@@ -167,5 +183,7 @@
       "service_tiers": []
     }
   ],
-  "remove_models": []
+  "remove_models": [
+    "claude-opus-4.6"
+  ]
 }

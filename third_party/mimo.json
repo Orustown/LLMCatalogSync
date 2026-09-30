@@ -4,20 +4,20 @@
     "classification": "official",
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
-    "verified_on": "2026-09-04",
+    "verified_on": "2026-09-30",
     "upstream_api": "openai-compatible",
     "codex_transport": "responses-gateway",
     "sources": [
-      "https://mimo.xiaomi.com/mimo-v2-5-pro",
+      "https://mimo.xiaomi.com/",
       "https://platform.xiaomimimo.com/",
-      "https://openrouter.ai/xiaomi/mimo-v2.5-pro"
+      "https://openrouter.ai/xiaomi/mimo-v2.6-pro"
     ]
   },
   "models": [
     {
-      "slug": "mimo-v2.5-pro",
-      "display_name": "MiMo V2.5 Pro",
-      "description": "Xiaomi flagship model for complex software engineering, agentic capabilities, and long-horizon tasks.",
+      "slug": "mimo-v2.6-pro",
+      "display_name": "MiMo V2.6 Pro",
+      "description": "Xiaomi flagship multimodal model for complex software engineering, agentic capabilities, and long-horizon tasks.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {"effort": "low", "description": "Fast responses with lighter reasoning"},
@@ -39,11 +39,11 @@
       "truncation_policy": {"mode": "tokens", "limit": 10000},
       "supports_parallel_tool_calls": true,
       "supports_image_detail_original": false,
-      "context_window": 1000000,
-      "max_context_window": 1000000,
+      "context_window": 1050000,
+      "max_context_window": 1050000,
       "effective_context_window_percent": 95,
       "experimental_supported_tools": [],
-      "input_modalities": ["text"],
+      "input_modalities": ["text", "image", "video", "audio"],
       "supports_search_tool": false,
       "use_responses_lite": false,
       "additional_speed_tiers": [],

@@ -4,19 +4,19 @@
     "classification": "official",
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
-    "verified_on": "2026-09-04",
+    "verified_on": "2026-09-30",
     "upstream_api": "chat-completions",
     "codex_transport": "responses-gateway",
     "sources": [
-      "https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-7-flash",
-      "https://openrouter.ai/google/gemini-3.7-flash"
+      "https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-8-flash",
+      "https://openrouter.ai/google/gemini-3.8-flash"
     ]
   },
   "models": [
     {
-      "slug": "gemini-3.7-flash",
-      "display_name": "Gemini 3.7 Flash",
-      "description": "Google multimodal model for fast agentic coding and multi-step reasoning.",
+      "slug": "gemini-3.8-flash",
+      "display_name": "Gemini 3.8 Flash",
+      "description": "Google's latest generally available Flash workhorse for long-horizon coding, autonomous agents, and multi-step reasoning.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
