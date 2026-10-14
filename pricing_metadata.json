@@ -44,6 +44,11 @@
       "url": "https://openrouter.ai/google/gemini-3.8-flash",
       "reliability": "community-fallback"
     },
+    "google_official": {
+      "label": "Google Gemini 4 Argon official launch pricing",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+      "reliability": "official"
+    },
     "minimax_official": {
       "label": "MiniMax official pay-as-you-go pricing",
       "url": "https://platform.minimaxi.com/docs/guides/pricing-paygo",
@@ -96,6 +101,7 @@
     "z-ai/glm-5.3": "glm-5.3",
     "z-ai/glm-5.3-flash": "glm-5.3-flash",
     "google/gemini-3.8-flash": "gemini-3.8-flash",
+    "google/gemini-4-argon": "gemini-4-argon",
     "minimax/minimax-m3": "MiniMax-M3",
     "tencent/hy4-preview": "hy4-preview",
     "anthropic/claude-opus-5.5": "claude-opus-5-5",
@@ -237,6 +243,15 @@
       "source": "google_community",
       "source_url": "https://openrouter.ai/google/gemini-3.8-flash",
       "notes": "OpenRouter Google AI Studio / Vertex standard rates after the current 50% promotion; the official model page lists a 1,048,576-token context window."
+    },
+    "gemini-4-argon": {
+      "provider": "Google",
+      "verified_on": "2026-10-14",
+      "input_per_m": 2.0,
+      "output_per_m": 10.0,
+      "source": "google_official",
+      "source_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
+      "notes": "Introductory standard rates announced by Google: $2/M input and $10/M output; cached input is discounted separately."
     },
     "MiniMax-M3": {
       "provider": "MiniMax",

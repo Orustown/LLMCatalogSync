@@ -5,6 +5,16 @@
     "catalog_kind": "vendor-baseline",
     "codex_adapter": "repository-maintained",
     "verified_on": "2026-09-30",
+    "model_ids_updated_on": "2026-10-14",
+    "model_id_basis": "User-provided official model IDs; existing capability verification date is unchanged.",
+    "base_url": "https://api.deepseek.com",
+    "model_versions": {
+      "deepseek-v4-pro": "DeepSeek-V4-Pro-0813",
+      "deepseek-flash": "DeepSeek-V4.1-Flash"
+    },
+    "deprecated_aliases": {
+      "deepseek-v4-flash": "deepseek-flash"
+    },
     "upstream_api": "responses-and-chat-completions",
     "codex_transport": "direct",
     "sources": [
@@ -18,7 +28,7 @@
     {
       "slug": "deepseek-v4-pro",
       "display_name": "DeepSeek V4 Pro",
-      "description": "DeepSeek V4 quality model with a 1M context window.",
+      "description": "DeepSeek V4 Pro flagship (DeepSeek-V4-Pro-0813) with a 1M context window.",
       "default_reasoning_level": "high",
       "supported_reasoning_levels": [
         {
@@ -115,5 +125,5 @@
       "service_tiers": []
     }
   ],
-  "remove_models": []
+  "remove_models": ["deepseek-v4-flash"]
 }

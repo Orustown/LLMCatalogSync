@@ -2,7 +2,7 @@
   "models": [
     {
       "slug": "muse-spark-1.3-contributor",
-      "display_name": "Muse Spark 1.3 Contributor (CC Switch)",
+      "display_name": "Muse Spark 1.3 Contributor (Gateway) (CC Switch)",
       "description": "Meta · 1M context · $0.1/M input · $0.2/M output · Vision",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [

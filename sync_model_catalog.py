@@ -705,13 +705,18 @@ def build_route_catalogs(
                     f"could not read official vendor catalog {official_path}: {exc}"
                 ) from exc
             metadata = official_document.get("metadata", {})
+            expected_classification = "third-party" if provider == "muse" else "official"
             if (
                 not isinstance(metadata, dict)
-                or metadata.get("classification") != "official"
+                or metadata.get("classification") != expected_classification
                 or metadata.get("catalog_kind") != "vendor-baseline"
+                or (
+                    provider == "muse"
+                    and metadata.get("model_id_scope") != "route-specific"
+                )
             ):
                 raise SyncError(
-                    f"official vendor metadata is missing from {official_path}"
+                    f"vendor baseline metadata is missing from {official_path}"
                 )
 
             official = load_overrides(official_path)

@@ -9,12 +9,13 @@
 
 | 来源 | 版本 | 模型数 | SHA-256 | 归档 |
 | --- | --- | ---: | --- | --- |
-| `github-main` | `rolling` | 11 | `47c22d46b473` | [JSON](./upstream/main/47c22d46b473.json) |
+| `cli-bundled` | `0.158.0` | 10 | `0625a9ec49d6` | [JSON](./cli/0.158.0/bundled.json) |
 
 ## Codex App
 
 | 版本（新到旧） | 来源 | 模型数 | SHA-256 | 归档 |
 | --- | --- | ---: | --- | --- |
+| `0.162.0-alpha.17.2` | `app-bundled` | 11 | `a15b53beebc2` | [JSON](./app/0.162.0-alpha.17.2/bundled.json) |
 | `0.159.0` | `app-bundled` | 10 | `0625a9ec49d6` | [JSON](./app/0.159.0/bundled.json) |
 | `0.159.0` | `app-github-tag` | 10 | `a40761ddb856` | [JSON](./app/0.159.0/github-tag.json) |
 | `0.153.3` | `app-bundled` | 11 | `22e38be212c0` | [JSON](./app/0.153.3/bundled.json) |
@@ -47,4 +48,4 @@
 | `2026-08-18T04:43:55.393813Z` | 8 | `46f1f9a42182` | [JSON](./upstream/main/46f1f9a42182.json) |
 | `2026-08-06T04:56:49.778842Z` | 8 | `b49fbdd60596` | [JSON](./upstream/main/b49fbdd60596.json) |
 
-索引更新时间：`2026-09-30T04:14:47.148143Z`
+索引更新时间：`2026-10-14T01:55:37.522777Z`

@@ -144,19 +144,27 @@ class CatalogTests(unittest.TestCase):
             "claude": [
                 "claude-opus-5-5",
                 "claude-fable-5-1",
+                "claude-sonnet-5-5",
+                "claude-haiku-5-5",
             ],
             "grok": [
                 "grok-4.7",
                 "grok-4.20-multi-agent",
                 "grok-build-0.1",
             ],
-            "gemini": ["gemini-3.8-flash"],
+            "gemini": [
+                "gemini-4-argon",
+                "gemini-3.8-flash",
+                "gemini-3.5-flash-lite",
+                "gemini-3.5-flash",
+                "gemini-3.1-pro",
+            ],
             "muse": ["muse-spark-1.3-contributor"],
-            "qwen": ["qwen3.8-max", "qwen3.8-flash"],
+            "qwen": ["qwen3.8-max", "qwen3.7-plus", "qwen3.8-flash"],
             "hunyuan": ["hy4-preview"],
             "deepseek": ["deepseek-v4-pro", "deepseek-flash"],
             "glm": ["glm-5.3", "glm-5.3-flash"],
-            "kimi": ["kimi-k3", "kimi-k2.7-code"],
+            "kimi": ["kimi-k3", "kimi-k2.7-code", "kimi-k2.6"],
             "minimax": ["MiniMax-M3", "MiniMax-M3.1-Flash-Preview"],
             "mimo": ["mimo-v2.6-pro"],
         }
@@ -199,7 +207,12 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(provider=provider):
                 document = json.loads(path.read_text(encoding="utf-8-sig"))
                 metadata = document["metadata"]
-                self.assertEqual(metadata["classification"], "official")
+                self.assertEqual(
+                    metadata["classification"],
+                    "third-party" if provider == "muse" else "official",
+                )
+                if provider == "muse":
+                    self.assertEqual(metadata["model_id_scope"], "route-specific")
                 self.assertEqual(metadata["catalog_kind"], "vendor-baseline")
                 self.assertEqual(metadata["codex_adapter"], "repository-maintained")
 
@@ -214,6 +227,31 @@ class CatalogTests(unittest.TestCase):
             ["low", "medium", "high", "xhigh"],
         )
         self.assertEqual(model["context_window"], 500_000)
+
+    def test_gemini_argon_uses_official_limits_and_route_id(self) -> None:
+        baseline = sync.load_overrides(sync.THIRD_PARTY_PRESETS["gemini"])
+        model = next(
+            model for model in baseline["models"] if model["slug"] == "gemini-4-argon"
+        )
+        self.assertEqual(model["context_window"], 1_048_576)
+        self.assertEqual(model["max_context_window"], 1_048_576)
+        self.assertEqual(model["default_reasoning_level"], "medium")
+        self.assertEqual(
+            [level["effort"] for level in model["supported_reasoning_levels"]],
+            ["low", "medium", "high"],
+        )
+        normalized, _ = sync.normalize_catalog_compatibility({"models": [model]})
+        self.assertEqual(normalized["models"][0]["input_modalities"], ["text", "image", "audio"])
+        manifest = sync.load_route_manifest(sync.ROUTE_MANIFESTS["openrouter"])
+        self.assertEqual(
+            manifest["providers"]["gemini"]["model_mappings"]["gemini-4-argon"],
+            "google/gemini-4-argon",
+        )
+        metadata = sync.load_pricing_metadata()
+        pricing_entry = sync.resolve_pricing_entry("google/gemini-4-argon", metadata)
+        self.assertEqual(pricing_entry["input_per_m"], 2.0)
+        self.assertEqual(pricing_entry["output_per_m"], 10.0)
+        self.assertEqual(metadata["sources"][pricing_entry["source"]]["reliability"], "official")
 
     def test_glm_models_use_official_reasoning_levels(self) -> None:
         overrides = sync.load_overrides(sync.THIRD_PARTY_PRESETS["glm"])
@@ -329,6 +367,60 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertTrue(model["supports_reasoning_summaries"])
         self.assertTrue(model["supports_parallel_tool_calls"])
+
+    def test_generated_catalog_preserves_current_and_previous_openai_flagships(self) -> None:
+        catalog = json.loads(
+            (sync.PROJECT_DIR / "model_catalog.json").read_text(encoding="utf-8")
+        )
+        slugs = {model["slug"] for model in catalog["models"]}
+        self.assertTrue(
+            {"gpt-6-astra", "gpt-6.1-sol", "gpt-6-luna", "gpt-5.6-sol"} <= slugs
+        )
+        overrides = sync.load_overrides(sync.PROJECT_DIR / "model_overrides.json")
+        self.assertNotIn("gpt-5.6-sol", overrides["remove_models"])
+
+    def test_generated_catalogs_use_portable_utf8_json(self) -> None:
+        paths = [sync.PROJECT_DIR / "model_catalog.json", *sync.build_route_catalogs()]
+        for path in paths:
+            with self.subTest(path=path.relative_to(sync.PROJECT_DIR)):
+                payload = path.read_bytes()
+                self.assertFalse(payload.startswith(b"\xef\xbb\xbf"))
+                self.assertNotIn(b"\r\n", payload)
+                catalog = json.loads(payload.decode("utf-8"))
+                self.assertEqual(set(catalog), {"models"})
+                self.assertEqual(payload, sync.serialized_json(catalog))
+
+    def test_vendor_base_urls_and_deepseek_redirect_are_preserved(self) -> None:
+        kimi = json.loads(sync.THIRD_PARTY_PRESETS["kimi"].read_text(encoding="utf-8"))
+        deepseek = json.loads(
+            sync.THIRD_PARTY_PRESETS["deepseek"].read_text(encoding="utf-8")
+        )
+        self.assertEqual(kimi["metadata"]["base_url"], "https://api.moonshot.cn/v1")
+        self.assertEqual(deepseek["metadata"]["base_url"], "https://api.deepseek.com")
+        self.assertEqual(
+            deepseek["metadata"]["deprecated_aliases"],
+            {"deepseek-v4-flash": "deepseek-flash"},
+        )
+        self.assertNotIn("deepseek-v4-flash", [model["slug"] for model in deepseek["models"]])
+
+    def test_routes_preserve_official_ids_and_explicit_preview_mapping(self) -> None:
+        for route in ("cc-switch", "litellm"):
+            manifest = sync.load_route_manifest(sync.ROUTE_MANIFESTS[route])
+            for provider in ("claude", "gemini", "qwen", "kimi"):
+                with self.subTest(route=route, provider=provider):
+                    baseline = sync.load_overrides(sync.THIRD_PARTY_PRESETS[provider])
+                    active_slugs = {
+                        model["slug"] for model in baseline["models"]
+                        if model["slug"] not in baseline["remove_models"]
+                    }
+                    mappings = manifest["providers"][provider]["model_mappings"]
+                    self.assertEqual(set(mappings), active_slugs)
+                    self.assertTrue(all(source == target for source, target in mappings.items()))
+        openrouter = sync.load_route_manifest(sync.ROUTE_MANIFESTS["openrouter"])
+        self.assertEqual(
+            openrouter["providers"]["gemini"]["model_mappings"]["gemini-3.1-pro"],
+            "google/gemini-3.1-pro-preview",
+        )
 
     def test_normalize_catalog_compatibility_fills_required_cli_flags(self) -> None:
         catalog = {

@@ -44,7 +44,8 @@
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
         "kimi-k3": "kimi-k3",
-        "kimi-k2.7-code": "kimi-k2.7-code"
+        "kimi-k2.7-code": "kimi-k2.7-code",
+        "kimi-k2.6": "kimi-k2.6"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -69,7 +70,11 @@
       "transport": "litellm-responses-proxy",
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
-        "gemini-3.8-flash": "gemini-3.8-flash"
+        "gemini-4-argon": "gemini-4-argon",
+        "gemini-3.8-flash": "gemini-3.8-flash",
+        "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+        "gemini-3.5-flash": "gemini-3.5-flash",
+        "gemini-3.1-pro": "gemini-3.1-pro"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -107,7 +112,9 @@
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
         "claude-opus-5-5": "claude-opus-5-5",
-        "claude-fable-5-1": "claude-fable-5-1"
+        "claude-fable-5-1": "claude-fable-5-1",
+        "claude-sonnet-5-5": "claude-sonnet-5-5",
+        "claude-haiku-5-5": "claude-haiku-5-5"
       },
       "notes": [
         "Configure matching model_name aliases in the LiteLLM proxy model_list."
@@ -120,6 +127,7 @@
       "display_suffix": "(LiteLLM)",
       "model_mappings": {
         "qwen3.8-max": "qwen3.8-max",
+        "qwen3.7-plus": "qwen3.7-plus",
         "qwen3.8-flash": "qwen3.8-flash"
       },
       "notes": [
